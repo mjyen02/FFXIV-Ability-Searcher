@@ -7,8 +7,9 @@
     <script src="script.js" defer></script>
     <link href="style.css" rel="stylesheet">
   </head>
-<body>
+<body class = "dark-mode">
   <h1>XIV Job Ability Searcher</h1>
+  <button id="darkMode">Dark Mode</button>
 
   <div class="wrapper">
 
@@ -19,6 +20,13 @@
           <input type="text" id="search" class="search" required>
         </p>
         <p>
+          <label for="category">Select a Mode: </label>
+          <select name = "categories" id="modeSelector">
+            <option value="pve">PvE</option>
+            <option value="pvp">PvP</option>
+            <option value="all">All</option>
+          </select>
+          <br></br>
           <label for="category">Select a Category: </label>
           <select name = "categories" id="category">
             <option value="Action">Action</option>

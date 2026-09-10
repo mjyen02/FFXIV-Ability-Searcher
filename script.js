@@ -1,12 +1,11 @@
-// Defining a baseURL and key to as part of the request URL
-
+// Defining a baseURL as part of the request URL
 const baseURL = 'https://v2.xivapi.com/api';
-
 
 // Grab references to all the DOM elements you'll need to manipulate
 const searchTerm = document.querySelector('.search');
 const searchForm = document.querySelector('form');
 const category = document.querySelector("#category");
+const modeSelector = document.querySelector("#modeSelector");
 const nextBtn = document.querySelector('.next');
 const previousBtn = document.querySelector('.prev');
 const section = document.querySelector('section');
@@ -22,38 +21,83 @@ let previousCursors = [];
 // Event listeners to control the functionality
 searchForm.addEventListener("submit", submitSearch);
 nextBtn.addEventListener("click", nextPage);
-previousBtn.addEventListener("click", previousPage);
+previousBtn.addEventListener("click", prevPage);
 
-function nextPage(e)
+// Define variable to page through filtered data
+let pageNumber = 0;
+let filteredData = [];
+const totalDisplayed = 10;
+
+// Dark Mode Button
+const darkModeButton = document.querySelector("#darkMode");
+darkModeButton.addEventListener("click", () => 
 {
-    // Push the current cursor ID to an array to make it accessible via the previous page function
-    previousCursors.push(nextCursor);
-    fetchResults(e);
+    document.body.classList.toggle("dark-mode");
+    if (document.body.classList.contains("dark-mode"))
+    {
+        darkModeButton.textContent = "Light Mode";
+    }
+    else
+    {
+        darkModeButton.textContent = "Dark Mode";
+    }
+});
+
+// Scrapping old pagination which uses the XIVAPI search directly. 
+// function nextPage(e)
+// {
+//     // Push the current cursor ID to an array to make it accessible via the previous page function
+//     previousCursors.push(nextCursor);
+//     fetchResults(e);
+// }
+
+// function previousPage(e)
+// {
+//     // Check if previousCursors array is only on second page to handle edge case
+//     if (previousCursors.length === 1)
+//     {
+//         previousCursors.pop();
+//         nextCursor = null;
+//     }
+//     // Else backtrack one page
+//     if (previousCursors.length > 1)
+//     {
+//         nextCursor = previousCursors.pop();
+//     }
+
+//     fetchResults(e);
+// }
+
+function nextPage()
+{
+    const lastPage = Math.ceil(filteredData.length / totalDisplayed) - 1;
+
+    if (pageNumber >= lastPage)
+    {
+        return;
+    }
+
+    pageNumber++;
+    displayResults();
 }
 
-function previousPage(e)
+function prevPage()
 {
-    // Check if previousCursors array is only on second page to handle edge case
-    if (previousCursors.length === 1)
+    if (pageNumber === 0)
     {
-        previousCursors.pop();
-        nextCursor = null;
+        return;
     }
-    // Else backtrack one page
-    if (previousCursors.length > 1)
+    else
     {
-        nextCursor = previousCursors.pop();
+        pageNumber--;
+        displayResults();
     }
-
-    fetchResults(e);
 }
-
 function submitSearch(e)
 {
     // Refresh all global parameters
-    nextCursor = null
+    pageNumber = 0;
     nav.style.display = "none";
-    previousCursors = [];
     fetchResults(e);
 }
 
@@ -62,20 +106,30 @@ async function fetchResults(e)
     // Use preventDefault() to stop the form submitting
     e.preventDefault();
 
+    // Configuration Object to handle different types of requests
+    const searchConfigs = 
+    {
+        Action: 
+        {
+            fields: "Name,Icon,ClassJobLevel,IsPvP,IsPlayerAction,IsRoleAction,ClassJob,ClassJobCategory,UnlockLink,CastType,ActionCategory"
+        },
+        Trait: 
+        {
+            fields: "Name,Icon,Level,ClassJob"
+        }
+    };
+
+    // Assign config based on selected sheet
+    const config = searchConfigs[category.value];
+
     // Construct parameters for searching for relevant fields
     const params = new URLSearchParams({
         sheets: category.value,
-        fields: 'Name,Icon,ClassJobLevel',
+        fields: config.fields,
         transient: 'Description@as(html)',
         query: `Name~"${searchTerm.value}"`,
-        limit:  10
+        sort: "Name"
     });
-
-    // Check for cursor from previous pagination
-    if (nextCursor)
-    {
-        params.append("cursor", nextCursor);
-    }
 
     // Assemble the full URL
     let url = `${baseURL}/search?${params}`;
@@ -84,12 +138,13 @@ async function fetchResults(e)
     // Fetch the api
     const response = await fetch(url);
     const data = await response.json();
-    
-    // Assign a cursor if limit exceeded
-    nextCursor = data.next;
+
+    console.log("Before Filtering:", data.results.map(result => result.fields.Name));
+    filteredData = filterResults(data);
+    console.log("Filtered Data:", filteredData);
 
     // Enable pagination buttons if limit exceeded
-    if (nextCursor)
+    if (filteredData.length > totalDisplayed)
     {
         nextBtn.style.display = 'block';
         nav.style.display = 'block'
@@ -99,7 +154,7 @@ async function fetchResults(e)
         nextBtn.style.display = 'none';
     }
 
-    if (previousCursors.length > 0)
+    if (pageNumber > 0)
     {
         previousBtn.style.display = 'block';
     }
@@ -109,9 +164,57 @@ async function fetchResults(e)
     }
 
     displayResults(data);
+
+    // Fields use to test sheets directly for field data
+    // const sheetTest = await fetch(`${baseURL}/sheet/Action/36966`);
+    // const testData = await sheetTest.json();
+    // console.log(testData);
+
+    // const pvpSheetTest = await fetch(`${baseURL}/sheet/Action/47438`);
+    // const pvpTestData = await pvpSheetTest.json();
+    // console.log(pvpTestData);
 }
 
-function displayResults(data)
+function filterResults(data)
+{
+    // Used for testing various fields during examination of IsPlayerAction
+    // console.log("API Results: ", data.results);
+
+    // for (const result of data.results)
+    // {
+    //     console.log(
+    //         result.fields.Name,
+    //         "IsPlayerAction:",
+    //         result.fields.IsPlayerAction,
+    //         "IsPvP:",
+    //         result.fields.IsPvP
+    //     )
+    // }
+
+    let results = data.results.filter(
+        result => result.fields.ClassJobCategory?.value !== 0
+    );
+
+    console.log("After initial filter: ", results);
+
+    if (modeSelector.value === "pve")
+    {
+        results = results.filter(
+            result => result.fields.IsPvP === false
+        );
+        console.log("After IsPvP Filter:", results);
+    }
+
+    if (modeSelector.value === "pvp")
+    {
+        results = results.filter(
+            result => result.fields.IsPvP === true
+        );
+    }
+    return results;
+}
+
+function displayResults()
 {
     console.log(`prevCursor Length: ${previousCursors.length}`);
     console.log(`Cursor: ${nextCursor}`);
@@ -123,7 +226,7 @@ function displayResults(data)
     }
 
     // Display "No results found on 0 matching elements"
-    if (data.results.length === 0)
+    if (filteredData.length === 0)
     {
         const heading = document.createElement("h1");
         heading.textContent = "No results found";
@@ -131,10 +234,32 @@ function displayResults(data)
         return;
     }
 
+    const startIndex = pageNumber * totalDisplayed;
+    const endIndex = Math.min(
+        startIndex + totalDisplayed,
+        filteredData.length
+    );
+
     // Iterate data array to begin populating the page with elements
-    for (const entry of data.results)
+    for (let i = startIndex; i < endIndex; i++)
     {
-        console.log(entry);
+        // // Fields Testing
+        // console.log(
+        //     entry.fields.Name,
+        //     "ID:", entry.row_id,
+        //     "Player:", entry.fields.IsPlayerAction,
+        //     "PvP:", entry.fields.IsPvP,
+        //     "Role:", entry.fields.IsRoleAction,
+        //     "ClassJob:", entry.fields.ClassJob?.value,
+        //     "ClassJobCategory:", entry.fields.ClassJobCategory?.value,
+        //     "Level:", entry.fields.ClassJobLevel,
+        //     "Unlock:", entry.fields.UnlockLink?.value,
+        //     "CastType:", entry.fields.CastType,
+        //     "ActionCategory:", entry.fields.ActionCategory?.value
+        // );
+
+        console.log(filteredData[i]);
+
         // Construct elements of article
         const article = document.createElement("article");
         const heading = document.createElement("h2");
@@ -146,7 +271,7 @@ function displayResults(data)
         tooltipContainer.classList.add("ability-tooltip");
         img.classList.add("ability-icon");
 
-        const iconPath = entry.fields.Icon.path_hr1;
+        const iconPath = filteredData[i].fields.Icon.path_hr1;
 
         // Construct Parameter to obtain ability images
         const iconParams = new URLSearchParams({
@@ -155,10 +280,10 @@ function displayResults(data)
         });
         
         // Fill the created elements with their relevant information
-        heading.textContent = entry.fields.Name;
-        levelInfo.textContent = `Class Level: ${entry.fields.ClassJobLevel}`;
+        heading.textContent = filteredData[i].fields.Name;
+        levelInfo.textContent = `Class Level: ${filteredData[i].fields.ClassJobLevel}`;
         img.src = `${baseURL}/asset?${iconParams}`;
-        const abilityTooltip = entry.transient['Description@as(html)'];
+        const abilityTooltip = filteredData[i].transient['Description@as(html)'];
 
         tooltipContainer.insertAdjacentHTML('beforeend', abilityTooltip);
 
