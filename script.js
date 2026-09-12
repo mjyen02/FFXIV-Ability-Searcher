@@ -136,43 +136,55 @@ async function fetchResults(e)
     console.log(url);
 
     // Fetch the api
-    const response = await fetch(url);
-    const data = await response.json();
-
-    console.log("Before Filtering:", data.results.map(result => result.fields.Name));
-    filteredData = filterResults(data);
-    console.log("Filtered Data:", filteredData);
-
-    // Enable pagination buttons if limit exceeded
-    if (filteredData.length > totalDisplayed)
+    try
     {
-        nextBtn.style.display = 'block';
-        nav.style.display = 'block'
+        const response = await fetch(url);
+        const data = await response.json();
+
+        console.log("Before Filtering:", data.results.map(result => result.fields.Name));
+        filteredData = filterResults(data);
+        console.log("Filtered Data:", filteredData);
+
+        // Enable pagination buttons if limit exceeded
+        if (filteredData.length > totalDisplayed)
+        {
+            nextBtn.style.display = 'block';
+            nav.style.display = 'block'
+        }
+        else
+        {
+            nextBtn.style.display = 'none';
+        }
+
+        if (pageNumber > 0)
+        {
+            previousBtn.style.display = 'block';
+        }
+        else
+        {
+            previousBtn.style.display = 'none';
+        }
+
+        displayResults();
+
+        // Fields use to test sheets directly for field data
+        const sheetTest = await fetch(`${baseURL}/sheet/Trait/460`);
+        const testData = await sheetTest.json();
+        console.log(testData);
+
+        // const pvpSheetTest = await fetch(`${baseURL}/sheet/Action/47438`);
+        // const pvpTestData = await pvpSheetTest.json();
+        // console.log(pvpTestData);
     }
-    else
+    catch (error)
     {
-        nextBtn.style.display = 'none';
+        console.error("Search Error: ", error);
+
+        const heading = document.createElement("h2");
+        heading.textContent = `An error occured during the search`;
+
+        section.replaceChildren(heading);
     }
-
-    if (pageNumber > 0)
-    {
-        previousBtn.style.display = 'block';
-    }
-    else
-    {
-        previousBtn.style.display = 'none';
-    }
-
-    displayResults(data);
-
-    // Fields use to test sheets directly for field data
-    // const sheetTest = await fetch(`${baseURL}/sheet/Action/36966`);
-    // const testData = await sheetTest.json();
-    // console.log(testData);
-
-    // const pvpSheetTest = await fetch(`${baseURL}/sheet/Action/47438`);
-    // const pvpTestData = await pvpSheetTest.json();
-    // console.log(pvpTestData);
 }
 
 function filterResults(data)
@@ -200,7 +212,7 @@ function filterResults(data)
     if (modeSelector.value === "pve")
     {
         results = results.filter(
-            result => result.fields.IsPvP === false
+            result => result.fields.IsPvP !== true
         );
         console.log("After IsPvP Filter:", results);
     }
@@ -271,18 +283,30 @@ function displayResults()
         tooltipContainer.classList.add("ability-tooltip");
         img.classList.add("ability-icon");
 
-        const iconPath = filteredData[i].fields.Icon.path_hr1;
+        const iconPath = filteredData[i].fields.Icon?.path_hr1;
 
-        // Construct Parameter to obtain ability images
-        const iconParams = new URLSearchParams({
-            path: iconPath,
-            format: 'jpg'
-        });
+        if (iconPath)
+        {
+            // Construct Parameter to obtain ability images
+            const iconParams = new URLSearchParams({
+                path: iconPath,
+                format: 'jpg'
+            });
+
+            img.src = `${baseURL}/asset?${iconParams}`;
+            img.alt = `Icon for ${filteredData[i].fields.Name}`;
+        }
+        else
+        {
+            img.alt = "No Icon Available";
+        }
         
         // Fill the created elements with their relevant information
         heading.textContent = filteredData[i].fields.Name;
-        levelInfo.textContent = `Class Level: ${filteredData[i].fields.ClassJobLevel}`;
-        img.src = `${baseURL}/asset?${iconParams}`;
+        levelInfo.textContent = `Class Level: ${filteredData[i].fields.ClassJobLevel
+            ? filteredData[i].fields.ClassJobLevel
+            : filteredData[i].fields.Level
+        }`;
         const abilityTooltip = filteredData[i].transient['Description@as(html)'];
 
         tooltipContainer.insertAdjacentHTML('beforeend', abilityTooltip);
