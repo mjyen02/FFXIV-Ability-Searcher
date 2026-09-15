@@ -75,9 +75,9 @@ export async function fetchClassJobs()
 
     console.log("ClassJob Sheet: ", classJobResults);
 
-    // const classJobCategoryList = await fetch('https://v2.xivapi.com/api/sheet/ClassJobCategory/31');
-    // const classJobCategoryResults = await classJobCategoryList.json();
-    // console.log("ClassJobCategory Sheet: ", classJobCategoryResults);
+    const classJobCategoryList = await fetch('https://v2.xivapi.com/api/sheet/ClassJobCategory/31');
+    const classJobCategoryResults = await classJobCategoryList.json();
+    console.log("ClassJobCategory Sheet: ", classJobCategoryResults);
 
     return classJobsFiltered;
 }

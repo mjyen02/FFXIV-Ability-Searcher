@@ -6,8 +6,10 @@ import { filterResults } from "./filter.js";
 
 // Grab references to all the DOM elements you'll need to manipulate
 const searchTerm = document.querySelector('.search');
+const searchLabel = document.querySelector('#searchLabel');
 const searchForm = document.querySelector('form');
 const category = document.querySelector("#category");
+const jobSelect = document.querySelector("#jobSelect");
 const section = document.querySelector('section');
 const nextBtn = document.querySelector('.next');
 const previousBtn = document.querySelector('.prev');
@@ -24,6 +26,18 @@ classJobsFiltered = await fetchClassJobs();
 searchForm.addEventListener("submit", submitSearch);
 nextBtn.addEventListener("click", nextPage);
 previousBtn.addEventListener("click", prevPage);
+jobSelect.addEventListener("change", () => {
+    if (jobSelect.value === "all")
+    {
+        searchTerm.required = true;
+        searchLabel.textContent = "Enter search term (required if no Job selected): ";
+    }
+    else
+    {
+        searchTerm.required = false;
+        searchLabel.textContent = "Search Term (Optional): ";
+    }
+})
 
 // Define variable to page through filtered data
 let pageNumber = 0;
@@ -48,6 +62,13 @@ darkModeButton.addEventListener("click", () =>
 function nextPage()
 {
     pageNumber++;
+
+    const startIndex = pageNumber * totalDisplayed;
+    const endIndex = Math.min(
+        startIndex + totalDisplayed,
+        filteredData.length
+    );
+
     displayResults(filteredData, startIndex, endIndex);
 
     const lastPage = Math.ceil(filteredData.length / totalDisplayed) - 1;
@@ -61,6 +82,13 @@ function nextPage()
 function prevPage()
 {
     pageNumber--;
+
+    const startIndex = pageNumber * totalDisplayed;
+    const endIndex = Math.min(
+        startIndex + totalDisplayed,
+        filteredData.length
+    );
+
     displayResults(filteredData, startIndex, endIndex);
 
     if (pageNumber === 0)
@@ -91,10 +119,16 @@ async function submitSearch(e)
 
     try
     {
-        const data = await fetchResults(category.value, searchTerm.value);
+        const data = await fetchResults(
+            category.value, 
+            searchTerm.value, 
+            jobSelect.value, 
+            classJobsFiltered,
+        );
+
         // console.log("Before Filtering:", allResults.map(result => result.fields.Name));
         console.log("allResults Array: ", data);
-        filteredData = filterResults(data, classJobsFiltered);
+        filteredData = filterResults(data, category.value, classJobsFiltered);
         console.log("Filtered Data:", filteredData);
 
         // Enable pagination buttons if limit exceeded

@@ -16,7 +16,13 @@
     <div class="controls">
       <form>
         <p>
-          <label for="search">Enter a SINGLE search term (required): </label>
+          <label for="jobSelect">Choose a Job (Optional):</label>
+          <select name = "categories" id="jobSelect">
+            <option value="all">All</option>
+          </select>
+        </p>
+        <p>
+          <label for="search" id="searchLabel">Enter a SINGLE search term (required if no Job selected): </label>
           <input type="text" id="search" class="search" required>
         </p>
         <p>
@@ -32,12 +38,6 @@
           <select name = "categories" id="category">
             <option value="Action">Action</option>
             <option value="Trait">Trait</option>
-          </select>
-        </p>
-        <p>
-          <label for="jobSelect">Choose a Job (Optional):</label>
-          <select name = "categories" id="jobSelect">
-            <option value="all">All</option>
           </select>
         </p>
         <p>

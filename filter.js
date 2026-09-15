@@ -4,25 +4,22 @@ const lowLevel = document.querySelector("#lowLevel");
 const highLevel = document.querySelector("#highLevel");
 const jobSelect = document.querySelector("#jobSelect");
 
-export function filterResults(data, classJobsFiltered)
+export function filterResults(data, categoryValue, classJobsFiltered)
 {
-    // Used for testing various fields during examination of IsPlayerAction
-    // console.log("API Results: ", data.results);
-
-    // for (const result of data.results)
-    // {
-    //     console.log(
-    //         result.fields.Name,
-    //         "IsPlayerAction:",
-    //         result.fields.IsPlayerAction,
-    //         "IsPvP:",
-    //         result.fields.IsPvP
-    //     )
-    // }
-
-    let results = data.filter(
-        result => result.fields.ClassJobCategory?.value !== 0 && result.fields.IsPlayerAction === true
-    );
+    let results;
+    
+    if (categoryValue === "Action")
+    {
+        results = data.filter(
+            result =>
+                result.fields.ClassJobCategory?.value !== 0 &&
+                result.fields.IsPlayerAction === true
+        );
+    }
+    else if (categoryValue === "Trait")
+    {   
+        results = data;
+    }
 
     console.log("After initial filter: ", results);
 
@@ -66,6 +63,16 @@ export function filterResults(data, classJobsFiltered)
             }
         )
     }
+
+    console.log("List before level sorting: ", results);
+    // Sort skills in ascending order before returning
+    results.sort((a, b) => {
+        const levelA = a.fields.Level ?? a.fields.ClassJobLevel;
+        const levelB = b.fields.Level ?? b.fields.ClassJobLevel;
+
+        return levelA - levelB;
+    });
+    console.log("List after level sorting: ", results);
 
     return results;
 }
