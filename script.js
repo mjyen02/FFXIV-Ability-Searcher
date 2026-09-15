@@ -6,6 +6,9 @@ const searchTerm = document.querySelector('.search');
 const searchForm = document.querySelector('form');
 const category = document.querySelector("#category");
 const modeSelector = document.querySelector("#modeSelector");
+const lowLevel = document.querySelector("#lowLevel");
+const highLevel = document.querySelector("#highLevel");
+const jobSelect = document.querySelector("#jobSelect");
 const nextBtn = document.querySelector('.next');
 const previousBtn = document.querySelector('.prev');
 const section = document.querySelector('section');
@@ -14,9 +17,9 @@ const nav = document.querySelector('nav');
 // Hide the "Previous"/"Next" navigation to begin with, as we don't need it immediately
 nav.style.display = 'none';
 
-// define the nextCursor for pagination
-let nextCursor = null;
+// Define Global Arrays
 let previousCursors = [];
+let classJobsFiltered = [];
 
 // Event listeners to control the functionality
 searchForm.addEventListener("submit", submitSearch);
@@ -43,56 +46,36 @@ darkModeButton.addEventListener("click", () =>
     }
 });
 
-// Scrapping old pagination which uses the XIVAPI search directly. 
-// function nextPage(e)
-// {
-//     // Push the current cursor ID to an array to make it accessible via the previous page function
-//     previousCursors.push(nextCursor);
-//     fetchResults(e);
-// }
-
-// function previousPage(e)
-// {
-//     // Check if previousCursors array is only on second page to handle edge case
-//     if (previousCursors.length === 1)
-//     {
-//         previousCursors.pop();
-//         nextCursor = null;
-//     }
-//     // Else backtrack one page
-//     if (previousCursors.length > 1)
-//     {
-//         nextCursor = previousCursors.pop();
-//     }
-
-//     fetchResults(e);
-// }
-
 function nextPage()
 {
-    const lastPage = Math.ceil(filteredData.length / totalDisplayed) - 1;
-
-    if (pageNumber >= lastPage)
-    {
-        return;
-    }
-
     pageNumber++;
     displayResults();
+
+    const lastPage = Math.ceil(filteredData.length / totalDisplayed) - 1;
+    if (pageNumber >= lastPage)
+    {
+        nextBtn.style.display = 'none';
+    }
+    previousBtn.style.display = 'block';
 }
 
 function prevPage()
 {
+    pageNumber--;
+    displayResults();
+
     if (pageNumber === 0)
     {
-        return;
+        previousBtn.style.display = "none";
     }
-    else
+
+    const lastPage = Math.ceil(filteredData.length / totalDisplayed) - 1;
+    if (pageNumber < lastPage)
     {
-        pageNumber--;
-        displayResults();
+        nextBtn.style.display = 'block';
     }
 }
+
 function submitSearch(e)
 {
     // Refresh all global parameters
@@ -101,9 +84,95 @@ function submitSearch(e)
     fetchResults(e);
 }
 
+async function fetchClassJobs()
+{
+    // Define a list of jobs to reorganize the selection menu
+    const jobOrder = 
+    [
+        "PLD",
+        "WAR",
+        "DRK",
+        "GNB",
+        "MNK",
+        "DRG",
+        "NIN",
+        "SAM",
+        "RPR",
+        "VPR",
+        "WHM",
+        "SCH",
+        "AST",
+        "SGE",
+        "BRD",
+        "MCH",
+        "DNC",
+        "BLM",
+        "SMN",
+        "RDM",
+        "PCT",
+        "BLU",
+        "BST"
+    ];
+
+    // Check available sheets
+    // const sheetList = await fetch('https://v2.xivapi.com/api/sheet');
+    // const sheetListData = await sheetList.json();
+    // console.log(sheetListData);
+    // const classJobList = sheetListData.sheets.find((result) => result.ame === "ClassJob");
+    // console.log("ClassJob Sheet: ", classJobList);
+    const params = new URLSearchParams(
+        {
+            fields: "Name,NameEnglish,Abbreviation,ClassJobParent,JobIndex,IsLimitedJob"
+        }
+    );
+
+    const classJobList = await fetch(`https://v2.xivapi.com/api/sheet/ClassJob?${params}`);
+    const classJobResults = await classJobList.json();
+    const classJobs = classJobResults.rows;
+    console.log("Pre-filtered ClassJobs: ", classJobs);
+    
+    classJobsFiltered = classJobs.filter((result) => {
+        return result.fields.JobIndex !== 0
+    })
+
+    console.log("Post-Filter ClassJobs Array: ", classJobsFiltered);
+    classJobsFiltered.sort((a,b) =>
+    {
+        const aIndex = jobOrder.indexOf(a.fields.Abbreviation);
+        const bIndex = jobOrder.indexOf(b.fields.Abbreviation);
+
+        return aIndex - bIndex;
+    })
+    console.log("Re-arranged Array to Match In-Game: ", classJobsFiltered);
+
+    for (const job of classJobsFiltered)
+    {
+        const jobOption = document.createElement("option");
+        jobOption.textContent = `${job.fields.NameEnglish} (${job.fields.Abbreviation})`;
+        jobOption.value = job.fields.Abbreviation;
+
+        if (job.fields.Abbreviation !== job.fields.ClassJobParent.fields.Abbreviation)
+        {
+            jobOption.textContent += ` / ${job.fields.ClassJobParent.fields.NameEnglish} (${job.fields.ClassJobParent.fields.Abbreviation})`;
+        }
+
+        jobSelect.appendChild(jobOption);
+    }
+
+    console.log("ClassJob Sheet: ", classJobResults);
+
+    const classJobCategoryList = await fetch('https://v2.xivapi.com/api/sheet/ClassJobCategory/31');
+    const classJobCategoryResults = await classJobCategoryList.json();
+    console.log("ClassJobCategory Sheet: ", classJobCategoryResults);
+}
+
 async function fetchResults(e)
 {
     // Use preventDefault() to stop the form submitting
+    const heading = document.createElement("h2");
+    heading.textContent = `Searching...`;
+    section.replaceChildren(heading);
+
     e.preventDefault();
 
     // Configuration Object to handle different types of requests
@@ -139,10 +208,24 @@ async function fetchResults(e)
     try
     {
         const response = await fetch(url);
-        const data = await response.json();
+        let data = await response.json();
 
-        console.log("Before Filtering:", data.results.map(result => result.fields.Name));
-        filteredData = filterResults(data);
+        let allResults = data.results;
+        if (data.next)
+        {
+            let newURL = `${baseURL}/search?${params}&cursor=${data.next}`;
+            while (data.next)
+            {
+                const loopedResponse = await fetch(newURL);
+                data = await loopedResponse.json();
+                allResults = allResults.concat(data.results);
+                newURL = `${baseURL}/search?${params}&cursor=${data.next}`;
+            }
+        }
+
+        // console.log("Before Filtering:", allResults.map(result => result.fields.Name));
+        console.log("allResults Array: ", allResults);
+        filteredData = filterResults(allResults);
         console.log("Filtered Data:", filteredData);
 
         // Enable pagination buttons if limit exceeded
@@ -168,19 +251,17 @@ async function fetchResults(e)
         displayResults();
 
         // Fields use to test sheets directly for field data
-        const sheetTest = await fetch(`${baseURL}/sheet/Trait/460`);
+        const sheetTest = await fetch(`${baseURL}/sheet/Action/16574`);
         const testData = await sheetTest.json();
         console.log(testData);
 
-        // const pvpSheetTest = await fetch(`${baseURL}/sheet/Action/47438`);
-        // const pvpTestData = await pvpSheetTest.json();
-        // console.log(pvpTestData);
+        const pvpSheetTest = await fetch(`${baseURL}/sheet/Action/49072`);
+        const pvpTestData = await pvpSheetTest.json();
+        console.log(pvpTestData);
     }
     catch (error)
     {
         console.error("Search Error: ", error);
-
-        const heading = document.createElement("h2");
         heading.textContent = `An error occured during the search`;
 
         section.replaceChildren(heading);
@@ -203,8 +284,8 @@ function filterResults(data)
     //     )
     // }
 
-    let results = data.results.filter(
-        result => result.fields.ClassJobCategory?.value !== 0
+    let results = data.filter(
+        result => result.fields.ClassJobCategory?.value !== 0 && result.fields.IsPlayerAction === true
     );
 
     console.log("After initial filter: ", results);
@@ -223,14 +304,38 @@ function filterResults(data)
             result => result.fields.IsPvP === true
         );
     }
+
+    if (jobSelect.value !== "all")
+    {
+        const abbreviationFilter = classJobsFiltered.find(classAbbrev => classAbbrev.fields.Abbreviation === jobSelect.value);
+
+        results = results.filter(result => 
+        {
+            return result.fields.ClassJob.fields.Abbreviation === abbreviationFilter.fields.Abbreviation
+            || result.fields.ClassJob.fields.Abbreviation === abbreviationFilter.fields.ClassJobParent.fields.Abbreviation;
+        }
+    );
+    }
+
+    if (lowLevel.value || highLevel.value)
+    {
+        results = results.filter(result => 
+            {
+                const level = result.fields.Level ?? result.fields.ClassJobLevel;
+
+                return (
+                    (!lowLevel.value || level >= Number(lowLevel.value)) &&
+                    (!highLevel.value || level <= Number(highLevel.value))
+                );
+            }
+        )
+    }
+
     return results;
 }
 
 function displayResults()
 {
-    console.log(`prevCursor Length: ${previousCursors.length}`);
-    console.log(`Cursor: ${nextCursor}`);
-
     // Clear all previous elements when updating display
     while (section.firstChild)
     {
@@ -275,12 +380,21 @@ function displayResults()
         // Construct elements of article
         const article = document.createElement("article");
         const heading = document.createElement("h2");
-        const levelInfo = document.createElement("h3");
+        const classInfo = document.createElement("h3");
+        const levelInfo = document.createElement("p");
         const img = document.createElement("img");
         const tooltipContainer = document.createElement("div");
         
+        // Create Specialized Header Elements
+        const abilityHeader = document.createElement("div");
+        const abilityHeaderText = document.createElement("div");
+        abilityHeader.classList.add("ability-header");
+        abilityHeaderText.classList.add("ability-header-text");
+        
         // Create class for ability tooltip and icons
         tooltipContainer.classList.add("ability-tooltip");
+        levelInfo.classList.add("ability-level");
+
         img.classList.add("ability-icon");
 
         const iconPath = filteredData[i].fields.Icon?.path_hr1;
@@ -301,23 +415,46 @@ function displayResults()
             img.alt = "No Icon Available";
         }
         
+        // Get Ability level
+        const level = filteredData[i].fields.ClassJobLevel
+            ? filteredData[i].fields.ClassJobLevel
+            : filteredData[i].fields.Level;
+
+        // Build acquired level text
+        const acquiredText = document.createElement("span");
+        const levelText = document.createElement("span");
+
+        acquiredText.textContent = "Acquired at: ";
+        levelText.textContent = `Level ${level}`;
+
+        acquiredText.classList.add("acquired-text");
+        levelText.classList.add("level-text");
+        levelInfo.appendChild(acquiredText);
+        levelInfo.appendChild(levelText);
+
         // Fill the created elements with their relevant information
         heading.textContent = filteredData[i].fields.Name;
-        levelInfo.textContent = `Class Level: ${filteredData[i].fields.ClassJobLevel
-            ? filteredData[i].fields.ClassJobLevel
-            : filteredData[i].fields.Level
-        }`;
+        classInfo.textContent = `Class/Job: ${filteredData[i].fields.ClassJob.fields.NameEnglish} (${filteredData[i].fields.ClassJob.fields.Abbreviation})`;
+
         const abilityTooltip = filteredData[i].transient['Description@as(html)'];
 
         tooltipContainer.insertAdjacentHTML('beforeend', abilityTooltip);
 
+        // Build the header
+        abilityHeaderText.appendChild(heading);
+        abilityHeaderText.appendChild(classInfo);
+
+        abilityHeader.appendChild(img);
+        abilityHeader.appendChild(abilityHeaderText);
+
         // Insert elements into the page
-        article.appendChild(img);
-        article.appendChild(heading);
-        article.appendChild(levelInfo);
+        article.appendChild(abilityHeader);
         article.appendChild(tooltipContainer);
+        article.appendChild(levelInfo);
         section.appendChild(article);
     }
 
     // console.log(data.results);
 }
+
+fetchClassJobs();

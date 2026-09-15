@@ -44,14 +44,10 @@ h2 {
   font-size: 20px;
 }
 
-h3 {
-  margin-top: -2px;
-}
-
 article p {
   font-size: 14px;
   line-height: 1.4;
-  margin: 1rem;
+  margin: 0;
 }
 
 article p.keywords {
@@ -93,8 +89,9 @@ span {
 }
 
 .ability-tooltip {
-  margin-top: 12px;
+  margin-top: 10px;
   padding-top: 10px;
+  padding-left: 5px;
   border-top: 1px solid var(--border-color);
   line-height: 1.6;
   color: var(--text-color);
@@ -106,16 +103,14 @@ span {
 
 .ability-tooltip p {
   margin: 5px 0;
+  padding: 0;
 }
 
 .ability-icon {
-  float: left;
   width: 64px;
   height: 64px;
-  margin-left: 10px;
-  margin-right: 10px;
-  margin-top: 5px;
   border-radius: 3px;
+  margin: 0;
 }
 
 input, select {
@@ -123,8 +118,43 @@ input, select {
   color: var(--text-color);
 }
 
+.ability-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ability-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.ability-header h3 {
+  margin: 0;
+}
+
+.ability-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
 #darkMode {
   position: absolute;
   top: 20px;
   right: 20px;
+}
+
+.ability-level {
+  margin-top: 5px;
+  padding-left: 5px;
+  font-size: 18px;
+  margin: 10px 0 0;
+}
+
+.acquired-text {
+    color: #8fd3ff;
+}
+
+.level-text {
+    color: #66cc66;
 }

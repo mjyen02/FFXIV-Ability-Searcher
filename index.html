@@ -26,12 +26,25 @@
             <option value="pvp">PvP</option>
             <option value="all">All</option>
           </select>
-          <br></br>
+        </p>
+        <P>
           <label for="category">Select a Category: </label>
           <select name = "categories" id="category">
             <option value="Action">Action</option>
             <option value="Trait">Trait</option>
           </select>
+        </p>
+        <p>
+          <label for="jobSelect">Choose a Job (Optional):</label>
+          <select name = "categories" id="jobSelect">
+            <option value="all">All</option>
+          </select>
+        </p>
+        <p>
+            <label for="category">Pick a Level Range (Optional):</label>
+            <input type="number" id="lowLevel" class="search" min="1" max="100" placeholder="Min">
+            -
+            <input type="number" id="highLevel" class="search" min="1" max="100" placeholder="Max">
         </p>
         <!-- <p>
           <label for="end-date">Enter an end date (format YYYYMMDD): </label>
@@ -45,8 +58,8 @@
 
     <div class="results">
       <nav>
-        <button class="prev">Previous 10</button>
-        <button class="next">Next 10</button>
+        <button class="prev">Previous</button>
+        <button class="next">Next</button>
       </nav>
 
       <section>
