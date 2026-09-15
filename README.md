@@ -61,7 +61,7 @@ This project has helped me practice:
 
 ## Future Improvements
 
-- [ ] Search state / loading indicator
+- ✅ Search state / loading indicator
 - [ ] Improved error messages
 - [ ] Sorting search results
 - [ ] Individual ability detail views
