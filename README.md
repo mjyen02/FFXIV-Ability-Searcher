@@ -97,10 +97,10 @@ This project has helped me practice:
 
 - [x] Search state / loading indicator
 - [ ] Improved error messages
-- [ ] Sorting search results
+- [x] Sorting search results
 - [ ] Individual ability detail views
 - [ ] Linked abilities and effects
-- [ ] More advanced search filters
+- [x] More advanced search filters
 - [ ] Improve mobile responsiveness
 - [ ] Improve UI styling
 - [x] Refactor JavaScript into additional modules
