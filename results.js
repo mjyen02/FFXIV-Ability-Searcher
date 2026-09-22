@@ -3,6 +3,7 @@ const baseURL = 'https://v2.xivapi.com/api';
 
 // Grab references to DOM elements needed for manipulation
 const section = document.querySelector('section');
+const modeSelector = document.querySelector("#modeSelector");
 
 export function displayResults(filteredData, startIndex, endIndex)
 {
@@ -79,22 +80,26 @@ export function displayResults(filteredData, startIndex, endIndex)
             img.alt = "No Icon Available";
         }
         
-        // Get Ability level
-        const level = filteredData[i].fields.ClassJobLevel
-            ? filteredData[i].fields.ClassJobLevel
-            : filteredData[i].fields.Level;
+        // Check for PvP to remove level text
+        if (modeSelector.value !== "pvp")
+        {
+            // Get Ability level
+            const level = filteredData[i].fields.ClassJobLevel
+                ? filteredData[i].fields.ClassJobLevel
+                : filteredData[i].fields.Level;
 
-        // Build acquired level text
-        const acquiredText = document.createElement("span");
-        const levelText = document.createElement("span");
+            // Build acquired level text
+            const acquiredText = document.createElement("span");
+            const levelText = document.createElement("span");
 
-        acquiredText.textContent = "Acquired at: ";
-        levelText.textContent = `Level ${level}`;
+            acquiredText.textContent = "Acquired at: ";
+            levelText.textContent = `Level ${level}`;
 
-        acquiredText.classList.add("acquired-text");
-        levelText.classList.add("level-text");
-        levelInfo.appendChild(acquiredText);
-        levelInfo.appendChild(levelText);
+            acquiredText.classList.add("acquired-text");
+            levelText.classList.add("level-text");
+            levelInfo.appendChild(acquiredText);
+            levelInfo.appendChild(levelText);
+        }
 
         // Fill the created elements with their relevant information
         heading.textContent = filteredData[i].fields.Name;

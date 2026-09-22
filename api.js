@@ -54,16 +54,19 @@ export async function fetchResults(categoryValue, searchTermValue, jobSelectValu
 
         allResults = jobData.results;
 
-        // Search the parent class too
-        params.set(
+        if (parentRowId !== jobRowId)
+        {
+            // Search the parent class too
+            params.set(
             'query',
             `+ClassJob=${parentRowId} +Name~"${searchTermValue}"`
         );
 
-        const parentResponse = await fetch(`${baseURL}/search?${params}`);
-        const parentData = await parentResponse.json();
+            const parentResponse = await fetch(`${baseURL}/search?${params}`);
+            const parentData = await parentResponse.json();
+            allResults = allResults.concat(parentData.results);
 
-        allResults = allResults.concat(parentData.results);
+        }
     }
     else if (jobSelectValue && jobSelectValue !== "all")
     {
