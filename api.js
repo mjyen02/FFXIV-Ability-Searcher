@@ -1,8 +1,8 @@
 // Defining a baseURL as part of the request URL
 const baseURL = 'https://v2.xivapi.com/api';
 
-export async function fetchResults(categoryValue, searchTermValue, jobSelectValue, classJobsFiltered)
-{
+export async function fetchResults(categoryValue, searchTermValue, jobSelectValue, classJobsFiltered, classJobCategory)
+{   
     // Configuration Object to handle different types of requests
     const searchConfigs = 
     {
@@ -24,29 +24,41 @@ export async function fetchResults(categoryValue, searchTermValue, jobSelectValu
         sheets: categoryValue,
         fields: config.fields,
         transient: 'Description@as(html)',
-        // query: `Name~"${searchTermValue}"`,
         sort: "Name"
     });
 
     let allResults = [];
     let jobRowId;
     let parentRowId;
+    let categoryRowId;
 
     if (jobSelectValue && jobSelectValue !== "all")
     {
         const classFilter = classJobsFiltered.find(
             classAbbrev => classAbbrev.fields.Abbreviation === jobSelectValue
         );
+
+        const categoryFilter = classJobCategory.find(
+            category => category.fields.Name === jobSelectValue
+        );
+        console.log("Selected Job Category: ", categoryFilter);
+
         console.log("API Class Filter Abbreviation: ", classFilter.fields.Abbreviation);
         jobRowId = classFilter.row_id;
         parentRowId = classFilter.fields.ClassJobParent.row_id;
+        categoryRowId = categoryFilter.row_id;
+
+        console.log(
+            "WAR ClassJobCategory:",
+            classFilter.fields.ClassJobCategory
+        );
     }
 
     if (jobSelectValue && jobSelectValue !== "all" && searchTermValue)
     {
         params.set(
             'query',
-            `+ClassJob=${jobRowId} +Name~"${searchTermValue}"`
+            `+ClassJobCategory=${categoryRowId} +Name~"${searchTermValue}"`
         );
 
         const jobResponse = await fetch(`${baseURL}/search?${params}`);
@@ -71,7 +83,11 @@ export async function fetchResults(categoryValue, searchTermValue, jobSelectValu
     else if (jobSelectValue && jobSelectValue !== "all")
     {
         // Search selected job
-        params.set('query', `ClassJob=${jobRowId}`);
+        const categoryFilter = classJobCategory.find(
+            category => category.fields.Name === jobSelectValue
+        );
+        console.log("Selected Job Category: ", categoryFilter);
+        params.set('query', `ClassJobCategory=${categoryRowId}`);
 
         const jobResponse = await fetch(`${baseURL}/search?${params}`);
         const jobData = await jobResponse.json();
@@ -85,6 +101,12 @@ export async function fetchResults(categoryValue, searchTermValue, jobSelectValu
         const parentData = await parentResponse.json();
 
         allResults = allResults.concat(parentData.results);
+
+        allResults = [
+            ...new Map(
+                allResults.map(action => [action.row_id, action])
+            ).values()
+];
     }
     else
     {
@@ -96,17 +118,17 @@ export async function fetchResults(categoryValue, searchTermValue, jobSelectValu
         allResults = data.results;
     }
 
-    // // Fields use to test sheets directly for field data
-    // const testParams = new URLSearchParams({
-    //     sheets: 'Action',
-    //     fields: 'Name,ClassJobCategory,ClassJob,ClassJobLevel,IsPlayerAction,IsRoleAction,IsPvP',
-    //     query: 'ClassJob=19'
-    // });
+    // Fields use to test sheets directly for field data
+    const testParams = new URLSearchParams({
+        sheets: 'Action',
+        fields: 'Name,ClassJobCategory,ClassJob,ClassJobLevel,IsPlayerAction,IsRoleAction,IsPvP',
+        query: 'ClassJobCategory=22'
+    });
 
-    // const sheetTest = await fetch(`${baseURL}/search?${testParams}`);
-    // const testData = await sheetTest.json();
+    const sheetTest = await fetch(`${baseURL}/search?${testParams}`);
+    const testData = await sheetTest.json();
 
-    // console.log(testData);
+    console.log(testData);
     // const pvpSheetTest = await fetch(`${baseURL}/sheet/Action/49072`);
     // const pvpTestData = await pvpSheetTest.json();
     // console.log(pvpTestData);
