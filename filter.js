@@ -12,8 +12,7 @@ export function filterResults(data, categoryValue, classJobsFiltered)
     {
         results = data.filter(
             result =>
-                result.fields.ClassJobCategory?.value !== 0 &&
-                result.fields.IsPlayerAction === true
+                result.fields.ClassJobCategory?.value !== 0 
         );
     }
     else if (categoryValue === "Trait")
@@ -22,6 +21,10 @@ export function filterResults(data, categoryValue, classJobsFiltered)
     }
 
     console.log("After initial filter: ", results);
+    // console.log(
+    //     "Primal Wrath after initial filter:",
+    //     results.some(result => result.fields.Name === "Primal Wrath")
+    // );
 
     if (modeSelector.value === "pve")
     {
@@ -44,12 +47,23 @@ export function filterResults(data, categoryValue, classJobsFiltered)
 
         results = results.filter(result => 
         {
-            return result.fields.ClassJob.fields.Abbreviation === abbreviationFilter.fields.Abbreviation
-            || result.fields.ClassJob.fields.Abbreviation === abbreviationFilter.fields.ClassJobParent.fields.Abbreviation;
+            console.log("Selected job:", jobSelect.value);
+            console.log("Abbreviation filter:", abbreviationFilter);    
+            console.log(
+                "Primal Wrath WAR:",
+                result.fields.ClassJobCategory.fields.WAR
+            );
+            console.log(
+                "Selected abbreviation:",
+                abbreviationFilter.fields.Abbreviation
+            );
+            // return result.fields.ClassJobCategory.fields.Name === abbreviationFilter.fields.Abbreviation
+            // || result.fields.ClassJobCategory.fields.Name === abbreviationFilter.fields.ClassJobParent.fields.Abbreviation;
+            return result.fields.ClassJobCategory.fields[abbreviationFilter.fields.Abbreviation];
         }
     );
     }
-
+    
     if (lowLevel.value || highLevel.value)
     {
         results = results.filter(result => 
