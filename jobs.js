@@ -49,7 +49,7 @@ export async function fetchClassJobs()
         return result.fields.JobIndex !== 0
     })
 
-    console.log("Post-Filter ClassJobs Array: ", classJobsFiltered);
+    // console.log("Post-Filter ClassJobs Array: ", classJobsFiltered);
     classJobsFiltered.sort((a,b) =>
     {
         const aIndex = jobOrder.indexOf(a.fields.Abbreviation);
@@ -57,7 +57,7 @@ export async function fetchClassJobs()
 
         return aIndex - bIndex;
     })
-    console.log("Re-arranged Array to Match In-Game: ", classJobsFiltered);
+    // console.log("Re-arranged Array to Match In-Game: ", classJobsFiltered);
 
     for (const job of classJobsFiltered)
     {
@@ -74,10 +74,30 @@ export async function fetchClassJobs()
     }
 
     console.log("ClassJob Sheet: ", classJobResults);
-
-    const classJobCategoryList = await fetch('https://v2.xivapi.com/api/sheet/ClassJobCategory/31');
-    const classJobCategoryResults = await classJobCategoryList.json();
-    console.log("ClassJobCategory Sheet: ", classJobCategoryResults);
-
     return classJobsFiltered;
+}
+
+export async function fetchClassJobCategory()
+{
+    const classJobCategoryList = await fetch(
+        'https://v2.xivapi.com/api/sheet/ClassJobCategory'
+    );
+
+    let classJobCategoryResults = await classJobCategoryList.json();
+    let allResults = classJobCategoryResults.rows;
+
+    while (classJobCategoryResults.rows.length === 100)
+    {
+        const lastRow = classJobCategoryResults.rows.at(-1);
+
+        const newURL =
+            `https://v2.xivapi.com/api/sheet/ClassJobCategory?after=${lastRow.row_id}`;
+
+        const loopedResponse = await fetch(newURL);
+        classJobCategoryResults = await loopedResponse.json();
+
+        allResults = allResults.concat(classJobCategoryResults.rows);
+    }
+
+    return allResults;
 }

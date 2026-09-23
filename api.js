@@ -117,21 +117,5 @@ export async function fetchResults(categoryValue, searchTermValue, jobSelectValu
 
         allResults = data.results;
     }
-
-    // Fields use to test sheets directly for field data
-    const testParams = new URLSearchParams({
-        sheets: 'Action',
-        fields: 'Name,ClassJobCategory,ClassJob,ClassJobLevel,IsPlayerAction,IsRoleAction,IsPvP',
-        query: 'ClassJobCategory=22'
-    });
-
-    const sheetTest = await fetch(`${baseURL}/search?${testParams}`);
-    const testData = await sheetTest.json();
-
-    console.log(testData);
-    // const pvpSheetTest = await fetch(`${baseURL}/sheet/Action/49072`);
-    // const pvpTestData = await pvpSheetTest.json();
-    // console.log(pvpTestData);
-
     return allResults; 
 }

@@ -2,6 +2,7 @@
 import { fetchResults } from "./api.js";
 import { displayResults } from "./results.js";
 import { fetchClassJobs } from "./jobs.js";
+import { fetchClassJobCategory } from "./jobs.js";
 import { filterResults } from "./filter.js";
 
 // Grab references to all the DOM elements you'll need to manipulate
@@ -20,9 +21,13 @@ nav.style.display = 'none';
 
 // Define Global Arrays
 let classJobsFiltered = [];
+let classJobCategoryArray = [];
+
+// Assing values to the global arrays
+classJobsFiltered = await fetchClassJobs();
+classJobCategoryArray = await fetchClassJobCategory();
 
 // Event listeners to control the functionality
-classJobsFiltered = await fetchClassJobs();
 searchForm.addEventListener("submit", submitSearch);
 nextBtn.addEventListener("click", nextPage);
 previousBtn.addEventListener("click", prevPage);
@@ -124,6 +129,7 @@ async function submitSearch(e)
             searchTerm.value, 
             jobSelect.value, 
             classJobsFiltered,
+            classJobCategoryArray
         );
 
         // console.log("Before Filtering:", allResults.map(result => result.fields.Name));
@@ -157,7 +163,7 @@ async function submitSearch(e)
             filteredData.length
         );
 
-        displayResults(filteredData, startIndex, endIndex);
+        displayResults(filteredData, startIndex, endIndex, classJobCategoryArray);
     }
     catch (error)
     {
@@ -166,4 +172,3 @@ async function submitSearch(e)
         return;
     }
 }
-

@@ -12,8 +12,7 @@ export function filterResults(data, categoryValue, classJobsFiltered)
     {
         results = data.filter(
             result =>
-                result.fields.ClassJobCategory?.value !== 0 &&
-                result.fields.IsPlayerAction === true
+                result.fields.ClassJobCategory?.value !== 0 
         );
     }
     else if (categoryValue === "Trait")
@@ -21,14 +20,11 @@ export function filterResults(data, categoryValue, classJobsFiltered)
         results = data;
     }
 
-    console.log("After initial filter: ", results);
-
     if (modeSelector.value === "pve")
     {
         results = results.filter(
             result => result.fields.IsPvP !== true
         );
-        console.log("After IsPvP Filter:", results);
     }
 
     if (modeSelector.value === "pvp")
@@ -44,12 +40,11 @@ export function filterResults(data, categoryValue, classJobsFiltered)
 
         results = results.filter(result => 
         {
-            return result.fields.ClassJob.fields.Abbreviation === abbreviationFilter.fields.Abbreviation
-            || result.fields.ClassJob.fields.Abbreviation === abbreviationFilter.fields.ClassJobParent.fields.Abbreviation;
+            return result.fields.ClassJobCategory.fields[abbreviationFilter.fields.Abbreviation];
         }
     );
     }
-
+    
     if (lowLevel.value || highLevel.value)
     {
         results = results.filter(result => 
@@ -64,7 +59,6 @@ export function filterResults(data, categoryValue, classJobsFiltered)
         )
     }
 
-    console.log("List before level sorting: ", results);
     // Sort skills in ascending order before returning
     results.sort((a, b) => {
         const levelA = a.fields.Level ?? a.fields.ClassJobLevel;
@@ -72,7 +66,6 @@ export function filterResults(data, categoryValue, classJobsFiltered)
 
         return levelA - levelB;
     });
-    console.log("List after level sorting: ", results);
 
     return results;
 }

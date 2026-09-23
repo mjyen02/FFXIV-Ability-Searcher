@@ -5,7 +5,7 @@ const baseURL = 'https://v2.xivapi.com/api';
 const section = document.querySelector('section');
 const modeSelector = document.querySelector("#modeSelector");
 
-export function displayResults(filteredData, startIndex, endIndex)
+export function displayResults(filteredData, startIndex, endIndex, classJobCategory)
 {
     // Clear all previous elements when updating display
     while (section.firstChild)
@@ -25,21 +25,6 @@ export function displayResults(filteredData, startIndex, endIndex)
     // Iterate data array to begin populating the page with elements
     for (let i = startIndex; i < endIndex; i++)
     {
-        // // Fields Testing
-        // console.log(
-        //     entry.fields.Name,
-        //     "ID:", entry.row_id,
-        //     "Player:", entry.fields.IsPlayerAction,
-        //     "PvP:", entry.fields.IsPvP,
-        //     "Role:", entry.fields.IsRoleAction,
-        //     "ClassJob:", entry.fields.ClassJob?.value,
-        //     "ClassJobCategory:", entry.fields.ClassJobCategory?.value,
-        //     "Level:", entry.fields.ClassJobLevel,
-        //     "Unlock:", entry.fields.UnlockLink?.value,
-        //     "CastType:", entry.fields.CastType,
-        //     "ActionCategory:", entry.fields.ActionCategory?.value
-        // );
-
         console.log(filteredData[i]);
 
         // Construct elements of article
@@ -103,8 +88,12 @@ export function displayResults(filteredData, startIndex, endIndex)
 
         // Fill the created elements with their relevant information
         heading.textContent = filteredData[i].fields.Name;
-        classInfo.textContent = `Class/Job: ${filteredData[i].fields?.ClassJob.fields.NameEnglish} (${filteredData[i].fields?.ClassJob.fields.Abbreviation})`;
+        const category = classJobCategory.find(
+            category => category.row_id === filteredData[i].fields.ClassJobCategory?.row_id
+        );
 
+        classInfo.textContent = `Class/Job: ${category?.fields.Name ?? "Unknown"}`;
+        
         const abilityTooltip = filteredData[i].transient['Description@as(html)'];
 
         tooltipContainer.insertAdjacentHTML('beforeend', abilityTooltip);
