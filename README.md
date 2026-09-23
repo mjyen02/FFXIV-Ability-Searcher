@@ -96,15 +96,15 @@ This project has helped me practice:
 ## Future Improvements
 
 - [x] Search state / loading indicator
-- [ ] Improved error messages
+- [x] Improved error messages
 - [x] Sorting search results
 - [ ] Individual ability detail views
 - [ ] Linked abilities and effects
 - [x] More advanced search filters
-- [ ] Improve mobile responsiveness
+- [x] Improve mobile responsiveness
 - [ ] Improve UI styling
 - [x] Refactor JavaScript into additional modules
-- [ ] Deploy the finished application
+- [x] Deploy the finished application
 
 ## Disclaimer
 
