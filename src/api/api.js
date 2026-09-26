@@ -1,7 +1,7 @@
 // Defining a baseURL as part of the request URL
 const baseURL = 'https://v2.xivapi.com/api';
 
-export async function fetchResults(searchTermValue, SelectedJob)
+export async function fetchResults(searchTermValue, SelectedJob, classJobCategory, classJobsFiltered)
 {   
     // Configuration Object to handle different types of requests
     const searchConfigs = 
@@ -25,21 +25,84 @@ export async function fetchResults(searchTermValue, SelectedJob)
     });
 
     let allResults = [];
-    params.set('query', `Name~"${searchTermValue}"`);
 
-    const response = await fetch(`${baseURL}/search?${params}`);
-    const data = await response.json();
-    allResults = data.results;
-
-    if (data.next)
+    if (SelectedJob && SelectedJob !== "all")
     {
-        let newURL = `${baseURL}/search?${params}&cursor=${data.next}`;
-        while (data.next)
+        const categoryFilter = classJobCategory.find(
+            category => category.fields.Name === SelectedJob
+        );
+
+        const classFilter = classJobsFiltered.find(
+            classAbbrev => classAbbrev.fields.Abbreviation === SelectedJob
+        );
+
+        const jobRowId = classFilter.row_id;
+        const parentRowId = classFilter.fields.ClassJobParent.row_id;
+        const categoryRowId = categoryFilter.row_id;
+        if (searchTermValue)
         {
-            const loopedResponse = await fetch(newURL);
-            data = await loopedResponse.json();
-            allResults = allResults.concat(data.results);
-            newURL = `${baseURL}/search?${params}&cursor=${data.next}`;
+            params.set(
+                'query',
+                `+ClassJobCategory=${categoryRowId} +Name~"${searchTermValue}"`
+            );
+
+            const jobResponse = await fetch(`${baseURL}/search?${params}`);
+            const jobData = await jobResponse.json();   
+
+            allResults = jobData.results;
+
+            if (parentRowId !== jobRowId)
+            {
+                // Search the parent class too
+                params.set(
+                    'query',
+                    `+ClassJob=${parentRowId} +Name~"${searchTermValue}"`
+                );
+                const parentResponse = await fetch(`${baseURL}/search?${params}`);
+                const parentData = await parentResponse.json();
+                allResults = allResults.concat(parentData.results);
+            }
+        }
+        else
+        {
+            // Search selected job
+            params.set('query', `ClassJobCategory=${categoryRowId}`);
+
+            const jobResponse = await fetch(`${baseURL}/search?${params}`);
+            const jobData = await jobResponse.json();
+
+            allResults = jobData.results;
+
+            if (parentRowId !== jobRowId)
+            {
+                // Search the parent class too
+                params.set('query', `ClassJob=${parentRowId}`);
+
+                const parentResponse = await fetch(`${baseURL}/search?${params}`);
+                const parentData = await parentResponse.json();
+
+                allResults = allResults.concat(parentData.results);
+            }
+        }
+    }
+    else
+    {
+        params.set('query', `Name~"${searchTermValue}"`);
+
+        const response = await fetch(`${baseURL}/search?${params}`);
+        let data = await response.json();
+        allResults = data.results;
+
+        if (data.next)
+        {
+            let newURL = `${baseURL}/search?${params}&cursor=${data.next}`;
+            while (data.next)
+            {
+                const loopedResponse = await fetch(newURL);
+                data = await loopedResponse.json();
+                allResults = allResults.concat(data.results);
+                newURL = `${baseURL}/search?${params}&cursor=${data.next}`;
+            }
         }
     }
 

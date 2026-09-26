@@ -22,7 +22,7 @@ function SearchForm(props)
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="search-form" onSubmit={handleSubmit}>
             <select value={selectedJob} onChange={onChange}>
                 <option key="0" value="all">All</option>
                 {props.jobList.map((job) => 
@@ -40,9 +40,7 @@ function SearchForm(props)
                 type="text"
                 value={searchTerm}
                 onChange={handleChange}
-            >
-
-            </input>
+            />
             <button type="submit">Submit Search</button>
         </form>
     );
