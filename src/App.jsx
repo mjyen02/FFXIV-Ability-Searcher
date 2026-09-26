@@ -1,5 +1,6 @@
 import SearchForm from "./components/SearchForm.jsx";
 import AbilityList from "./components/AbilityList.jsx";
+import Filters from "./components/Filters.jsx";
 import { useState, useEffect } from "react";
 import { fetchResults } from "./api/api.js";
 import { fetchClassJobs } from "./api/api.js";
@@ -8,11 +9,20 @@ import './App.css'
 
 function App() {
 
+  // States relating to initlization
   const [isLoading, setIsLoading] = useState(true);
-  const [results, setResults] = useState([]);
   const [classJobs, setClassJobs] = useState([]);
   const [classJobCategories, setClassJobCategories] = useState([]);
+
+  // States relating to data flow
+  const [results, setResults] = useState([]);
   const [selectedJob, setSelectedJob] = useState("");
+  const [filters, setFilters] = useState({
+    mode: "pve",
+    type: "Action",
+    minLevel: 1,
+    maxLevel: 100
+  });
 
   useEffect(() => {
     async function loadData() 
@@ -31,7 +41,7 @@ function App() {
 
   async function handleSearch(searchTerm, selectedJobResponse)
   {
-    const allResults = await fetchResults(searchTerm, selectedJobResponse, classJobCategories, classJobs);
+    const allResults = await fetchResults(searchTerm, selectedJobResponse, classJobCategories, classJobs, filters);
     console.log(allResults);
     setResults(allResults);
     setSelectedJob(selectedJobResponse);
@@ -49,6 +59,7 @@ function App() {
         onSearch={handleSearch}
         jobList={classJobs}
       />
+      <Filters filters={filters} onFilterChange={setFilters}/>
       <AbilityList results={results} classJobCategories={classJobCategories} classJobs={classJobs} selectedJob={selectedJob}/>
     </div>
   );

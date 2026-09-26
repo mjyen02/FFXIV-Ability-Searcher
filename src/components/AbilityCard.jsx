@@ -2,6 +2,7 @@ const baseURL = 'https://v2.xivapi.com/api';
 
 function AbilityCard({ result })
 {
+
     return (
         <article className="ability-card">
             <header className="ability-header">
@@ -25,9 +26,14 @@ function AbilityCard({ result })
                     __html: result.transient["Description@as(html)"]
                 }}
             />
-            <p className="ability-level">Level: {result.fields.ClassJobLevel 
-            ? result.fields.ClassJobLevel
-            : result.fields.Level} </p>
+            <p className="ability-level">Level:  
+                <span>
+                    {result.fields.ClassJobLevel
+                        ? ` ${result.fields.ClassJobLevel}`
+                        : ` ${result.fields.Level}`
+                    }    
+                </span> 
+            </p>
         </article>
     );
 }

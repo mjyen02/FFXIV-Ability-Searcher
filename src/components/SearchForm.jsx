@@ -16,14 +16,14 @@ function SearchForm(props)
         props.onSearch(searchTerm, selectedJob);
     }
 
-    function onChange(event)
+    function onJobChange(event)
     {
         setSelectedJob(event.target.value);
     }
 
     return (
         <form className="search-form" onSubmit={handleSubmit}>
-            <select value={selectedJob} onChange={onChange}>
+            <select value={selectedJob} onChange={onJobChange}>
                 <option key="0" value="all">All</option>
                 {props.jobList.map((job) => 
                     <option key={job.row_id} value={job.fields.Abbreviation}>

@@ -1,28 +1,36 @@
 // Defining a baseURL as part of the request URL
 const baseURL = 'https://v2.xivapi.com/api';
 
-export async function fetchResults(searchTermValue, SelectedJob, classJobCategory, classJobsFiltered)
+export async function fetchResults(searchTermValue, SelectedJob, classJobCategory, classJobsFiltered, filters)
 {   
     // Configuration Object to handle different types of requests
     const searchConfigs = 
     {
         Action: 
         {
-            fields: "Name,Icon,ClassJobLevel,IsPvP,IsPlayerAction,IsRoleAction,ClassJob,ClassJobCategory,UnlockLink,CastType,ActionCategory"
+            fields: "Name,Icon,ClassJobLevel,IsPvP,IsPlayerAction,IsRoleAction,ClassJob,ClassJobCategory,UnlockLink,CastType,ActionCategory",
+            levelField: "ClassJobLevel"
         },
         Trait: 
         {
-            fields: "Name,Icon,Level,ClassJob"
+            fields: "Name,Icon,Level,ClassJob,ClassJobCategory",
+            levelField: "Level"
         }
     };
-
+    const config = searchConfigs[filters.type];
+    let baseQuery = `+${config.levelField}>=${filters.minLevel} +${config.levelField}<=${filters.maxLevel}`;
     // Construct parameters for searching for relevant fields
     const params = new URLSearchParams({
-        sheets: "Action",
-        fields: searchConfigs.Action.fields,
+        sheets: filters.type,
+        fields: config.fields,
         transient: 'Description@as(html)',
-        sort: "Name"
+        sort: "Name",
     });
+
+    if (filters.mode === "pvp" && filters.type === "Action")
+    {
+        baseQuery += " +IsPvP=true -ClassJobCategory=0";
+    }
 
     let allResults = [];
 
@@ -43,7 +51,7 @@ export async function fetchResults(searchTermValue, SelectedJob, classJobCategor
         {
             params.set(
                 'query',
-                `+ClassJobCategory=${categoryRowId} +Name~"${searchTermValue}"`
+                `${baseQuery} +ClassJobCategory=${categoryRowId} +Name~"${searchTermValue}"`
             );
 
             const jobResponse = await fetch(`${baseURL}/search?${params}`);
@@ -56,7 +64,7 @@ export async function fetchResults(searchTermValue, SelectedJob, classJobCategor
                 // Search the parent class too
                 params.set(
                     'query',
-                    `+ClassJob=${parentRowId} +Name~"${searchTermValue}"`
+                    `${baseQuery} +ClassJob=${parentRowId} +Name~"${searchTermValue}"`
                 );
                 const parentResponse = await fetch(`${baseURL}/search?${params}`);
                 const parentData = await parentResponse.json();
@@ -66,7 +74,7 @@ export async function fetchResults(searchTermValue, SelectedJob, classJobCategor
         else
         {
             // Search selected job
-            params.set('query', `ClassJobCategory=${categoryRowId}`);
+            params.set('query', `${baseQuery} +ClassJobCategory=${categoryRowId}`);
 
             const jobResponse = await fetch(`${baseURL}/search?${params}`);
             const jobData = await jobResponse.json();
@@ -76,7 +84,7 @@ export async function fetchResults(searchTermValue, SelectedJob, classJobCategor
             if (parentRowId !== jobRowId)
             {
                 // Search the parent class too
-                params.set('query', `ClassJob=${parentRowId}`);
+                params.set('query', `${baseQuery} +ClassJob=${parentRowId}`);
 
                 const parentResponse = await fetch(`${baseURL}/search?${params}`);
                 const parentData = await parentResponse.json();
@@ -87,12 +95,13 @@ export async function fetchResults(searchTermValue, SelectedJob, classJobCategor
     }
     else
     {
-        params.set('query', `Name~"${searchTermValue}"`);
+        params.set('query', `${baseQuery} +Name~"${searchTermValue}" -ClassJobCategory=0`);
+        console.log(params.get("query"));
 
         const response = await fetch(`${baseURL}/search?${params}`);
         let data = await response.json();
         allResults = data.results;
-
+        console.log(data.results.map(result => result.fields.Name));
         if (data.next)
         {
             let newURL = `${baseURL}/search?${params}&cursor=${data.next}`;
@@ -105,6 +114,14 @@ export async function fetchResults(searchTermValue, SelectedJob, classJobCategor
             }
         }
     }
+
+        // Sort skills in ascending order before returning
+        allResults.sort((a, b) => {
+            const levelA = a.fields.Level ?? a.fields.ClassJobLevel;
+            const levelB = b.fields.Level ?? b.fields.ClassJobLevel;
+
+            return levelA - levelB;
+        });
 
     return allResults;
 }
@@ -139,12 +156,6 @@ export async function fetchClassJobs()
         "BST"
     ];
 
-    // Check available sheets
-    // const sheetList = await fetch('https://v2.xivapi.com/api/sheet');
-    // const sheetListData = await sheetList.json();
-    // console.log(sheetListData);
-    // const classJobList = sheetListData.sheets.find((result) => result.ame === "ClassJob");
-    // console.log("ClassJob Sheet: ", classJobList);
     const params = new URLSearchParams(
         {
             fields: "Name,NameEnglish,Abbreviation,ClassJobParent,JobIndex,IsLimitedJob"
