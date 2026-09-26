@@ -58,8 +58,9 @@ function App() {
       <SearchForm 
         onSearch={handleSearch}
         jobList={classJobs}
+        filters={filters}
+        onFilterChange={setFilters}
       />
-      <Filters filters={filters} onFilterChange={setFilters}/>
       <AbilityList results={results} classJobCategories={classJobCategories} classJobs={classJobs} selectedJob={selectedJob}/>
     </div>
   );

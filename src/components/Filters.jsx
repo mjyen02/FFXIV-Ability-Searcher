@@ -1,12 +1,5 @@
-import { useState } from "react";
-
 function Filters(props)
 {
-    const [selectedMode, setSelectedMode] = useState("pve");
-    const [selectedCategory, setSelectedCategory] = useState("Action");
-    const [minLevel, setMinLevel] = useState(1);
-    const [maxLevel, setMaxLevel] = useState(100);
-
     function onModeChange(event)
     {
         const newMode = event.target.value;
@@ -46,19 +39,51 @@ function Filters(props)
     }
 
     return(
-        <div>
-            <select value={props.filters.mode} onChange={onModeChange}>
-                <option value="pve">PvE</option>
-                <option value="pvp">PvP</option>
-                <option value="all">All</option>
-            </select>
-            <select value={props.filters.type} onChange={onCategoryChange}>
-                <option value="Action">Actions</option>
-                <option value="Trait">Traits</option>
-            </select>
-            <input type="number" value={props.filters.minLevel} onChange={onMinLevelChange}></input>
-            <input type="number" value={props.filters.maxLevel} onChange={onMaxLevelChange}></input>
-        </div>
+        <aside className="filters">
+            <h2>Filters</h2>
+            <div className="filter-group">
+                <label htmlFor="mode">Mode</label>
+                <select 
+                    id="mode"
+                    value={props.filters.mode} 
+                    onChange={onModeChange}
+                >
+                    <option value="pve">PvE</option>
+                    <option value="pvp">PvP</option>
+                    <option value="all">All</option>
+                </select>
+            </div>
+            <div className="filter-group">
+                <label htmlFor="type">Category</label>
+                <select 
+                    id="type"
+                    value={props.filters.type} 
+                    onChange={onCategoryChange}
+                >
+                    <option value="Action">Actions</option>
+                    <option value="Trait">Traits</option>
+                </select>
+            </div>
+            <div className="filter-group">
+                <label>Level Range</label>
+                <div className="level-inputs">
+                    <input 
+                        type="number" 
+                        value={props.filters.minLevel} 
+                        onChange={onMinLevelChange} 
+                        min="1"
+                        max="100"
+                    />
+                    <input 
+                        type="number" 
+                        value={props.filters.maxLevel} 
+                        onChange={onMaxLevelChange} 
+                        min="1"
+                        max="100"
+                    />
+                </div>
+            </div>
+        </aside>
     );
 }
 

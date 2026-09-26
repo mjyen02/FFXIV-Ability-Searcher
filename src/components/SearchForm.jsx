@@ -1,9 +1,11 @@
 import { useState } from "react";
+import Filters from "./Filters";
 
 function SearchForm(props)
 {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedJob, setSelectedJob] = useState("all");
+    const [showFilters, setShowFilters] = useState(false);
 
     function handleChange(event)
     {
@@ -22,27 +24,39 @@ function SearchForm(props)
     }
 
     return (
-        <form className="search-form" onSubmit={handleSubmit}>
-            <select value={selectedJob} onChange={onJobChange}>
-                <option key="0" value="all">All</option>
-                {props.jobList.map((job) => 
-                    <option key={job.row_id} value={job.fields.Abbreviation}>
-                    {job.fields.NameEnglish} ({job.fields.Abbreviation})
+        <>
+            <form className="search-form" onSubmit={handleSubmit}>
+                <select value={selectedJob} onChange={onJobChange}>
+                    <option key="0" value="all">All</option>
+                    {props.jobList.map((job) => 
+                        <option key={job.row_id} value={job.fields.Abbreviation}>
+                        {job.fields.NameEnglish} ({job.fields.Abbreviation})
 
-                    {job.fields.Abbreviation !== job.fields.ClassJobParent.fields.Abbreviation && (
-                        ` / ${job.fields.ClassJobParent.fields.NameEnglish} (${job.fields.ClassJobParent.fields.Abbreviation})`
+                        {job.fields.Abbreviation !== job.fields.ClassJobParent.fields.Abbreviation && (
+                            ` / ${job.fields.ClassJobParent.fields.NameEnglish} (${job.fields.ClassJobParent.fields.Abbreviation})`
+                        )}
+                    </option>
                     )}
-                </option>
-                )}
-            </select>
-            <label>Enter a search term: </label>
-            <input
-                type="text"
-                value={searchTerm}
-                onChange={handleChange}
-            />
-            <button type="submit">Submit Search</button>
-        </form>
+                </select>
+                <label>Enter a search term: </label>
+                <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={handleChange}
+                />
+                <button type="button" onClick={() => setShowFilters(!showFilters)}>
+                    Filters
+                </button>
+                <button type="submit">Submit Search</button>
+            </form>
+            {showFilters && (
+                <Filters
+                    filters={props.filters}
+                    onFilterChange={props.onFilterChange}
+                />
+            )}
+        </>
+        
     );
 }
 
