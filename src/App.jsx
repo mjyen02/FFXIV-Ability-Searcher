@@ -1,6 +1,6 @@
 import SearchForm from "./components/SearchForm.jsx";
 import AbilityList from "./components/AbilityList.jsx";
-import Filters from "./components/Filters.jsx";
+import { sortAbilities } from "./utils/abilitySorting.js";
 import { useState, useEffect } from "react";
 import { fetchResults } from "./api/api.js";
 import { fetchClassJobs } from "./api/api.js";
@@ -43,7 +43,6 @@ function App() {
   async function handleSearch(searchTerm, selectedJobResponse)
   {
     setIsSearching(true);
-
     try {
       const allResults = await fetchResults (
         searchTerm,
@@ -53,7 +52,7 @@ function App() {
         filters
       );
 
-      setResults(allResults);
+      setResults(sortAbilities(allResults, classJobs));
       setSelectedJob(selectedJobResponse);
     } finally {
       setIsSearching(false);

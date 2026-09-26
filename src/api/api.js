@@ -123,6 +123,16 @@ export async function fetchResults(searchTermValue, SelectedJob, classJobCategor
             return levelA - levelB;
         });
 
+console.log("Test Array: ",
+    allResults.map((ability) => ({
+        name: ability.fields.Name,
+        classJob: ability.fields.ClassJob?.fields?.Abbreviation,
+        parent: ability.fields.ClassJob?.fields?.ClassJobParent?.fields?.Abbreviation,
+        category: ability.fields.ClassJobCategory?.fields?.Name,
+        jobCategory: ability.fields.ClassJob?.fields?.ClassJobCategory?.row_id
+    }))
+);
+
     return allResults;
 }
 
