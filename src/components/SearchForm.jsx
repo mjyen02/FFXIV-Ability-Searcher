@@ -43,6 +43,11 @@ function SearchForm(props)
                     type="text"
                     value={searchTerm}
                     onChange={handleChange}
+                    placeholder={
+                        selectedJob === "all"
+                            ? "Required if no job selected"
+                            : "Optional with Job Selected"
+                    }
                 />
                 <button type="button" onClick={() => setShowFilters(!showFilters)}>
                     Filters

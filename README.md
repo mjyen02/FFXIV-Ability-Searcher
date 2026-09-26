@@ -16,12 +16,12 @@ This rebuild is being used to learn React by recreating the application's existi
 * [x] Ability card structure
 * [x] Job dropdown
 * [x] Controlled form inputs
-* [ ] Job filtering
-* [ ] Loading state
-* [ ] Error handling
-* [ ] Sorting
+* [x] Job filtering
+* [x] Loading state
+* [x] Error handling
+* [x] Sorting
 * [ ] Pagination
-* [ ] Mobile responsiveness
+* [x] Mobile responsiveness
 * [ ] Linked abilities
 * [ ] UI polish
 

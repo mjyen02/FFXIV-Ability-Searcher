@@ -17,6 +17,7 @@ function App() {
   // States relating to data flow
   const [results, setResults] = useState([]);
   const [selectedJob, setSelectedJob] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const [filters, setFilters] = useState({
     mode: "pve",
     type: "Action",
@@ -41,10 +42,22 @@ function App() {
 
   async function handleSearch(searchTerm, selectedJobResponse)
   {
-    const allResults = await fetchResults(searchTerm, selectedJobResponse, classJobCategories, classJobs, filters);
-    console.log(allResults);
-    setResults(allResults);
-    setSelectedJob(selectedJobResponse);
+    setIsSearching(true);
+
+    try {
+      const allResults = await fetchResults (
+        searchTerm,
+        selectedJobResponse,
+        classJobCategories,
+        classJobs,
+        filters
+      );
+
+      setResults(allResults);
+      setSelectedJob(selectedJobResponse);
+    } finally {
+      setIsSearching(false);
+    }
   }
 
   if (isLoading)
@@ -61,6 +74,7 @@ function App() {
         filters={filters}
         onFilterChange={setFilters}
       />
+      {isSearching && <p>Searching...</p>}
       <AbilityList results={results} classJobCategories={classJobCategories} classJobs={classJobs} selectedJob={selectedJob}/>
     </div>
   );
