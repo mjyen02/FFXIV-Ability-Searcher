@@ -1,16 +1,44 @@
-# React + Vite
+# FFXIV Ability Searcher — React Rebuild
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This branch contains a React rebuild of my **FFXIV Ability Searcher** project.
 
-Currently, two official plugins are available:
+The original project was built with vanilla HTML, CSS, and JavaScript to practice working with APIs, asynchronous JavaScript, DOM manipulation, filtering, sorting, and pagination.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This rebuild is being used to learn React by recreating the application's existing functionality with React components, state, props, and hooks.
 
-## React Compiler
+## Current Progress
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* [x] React project setup
+* [x] XIVAPI integration
+* [x] Search form
+* [x] Search results
+* [x] Ability list component
+* [x] Ability card structure
+* [x] Job dropdown
+* [x] Controlled form inputs
+* [ ] Job filtering
+* [ ] Loading state
+* [ ] Error handling
+* [ ] Sorting
+* [ ] Pagination
+* [ ] Mobile responsiveness
+* [ ] Linked abilities
+* [ ] UI polish
 
-## Expanding the Oxlint configuration
+## Project Goals
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+The goal of this rebuild is to:
+
+* Learn React by migrating an existing project I understand
+* Practice breaking an application into reusable components
+* Replace direct DOM manipulation with React rendering
+* Learn state management and data flow between components
+* Continue using XIVAPI as a real-world API
+
+## API
+
+This project uses [XIVAPI](https://v2.xivapi.com/) to retrieve Final Fantasy XIV action, trait, and job data.
+
+## Original Project
+
+The original vanilla JavaScript implementation is maintained separately from this React rebuild.
