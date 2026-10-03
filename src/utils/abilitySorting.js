@@ -19,13 +19,7 @@ export function sortAbilities(allResults, classJobs)
         
         return a.fields.Name.localeCompare(b.fields.Name);
     })
-    console.log("Sorted Results: ",
-    sortedResults.map((ability) => ({
-        name: ability.fields.Name,
-        category: ability.fields.ClassJobCategory?.fields?.Name,
-        group: getJobGroup(ability, classJobs)
-    }))
-);
+    console.log("Sorted Results: ", sortedResults);
     return sortedResults;
 }
 

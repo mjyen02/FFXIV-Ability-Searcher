@@ -54,6 +54,8 @@ function App() {
 
       setResults(sortAbilities(allResults, classJobs));
       setSelectedJob(selectedJobResponse);
+    } catch (error) {
+      return <h2>Sorry, an error during the search has occurred.</h2>
     } finally {
       setIsSearching(false);
     }
