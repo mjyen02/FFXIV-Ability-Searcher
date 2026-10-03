@@ -1,9 +1,82 @@
 /* ---------- General ---------- */
 
 :root {
-    background-color: #121212;
-    color: #f0f0f0;
+    --background: #121212;
+    --surface: #1e1e1e;
+    --surface-light: #2a2a2a;
+    --surface-hover: #333333;
+
+    --border: #444444;
+    --border-light: #555555;
+
+    --text: #f0f0f0;
+    --text-muted: #aaaaaa;
+
+    --accent: #ff7b1a;
+    --accent-hover: #ff913d;
+    --accent-light: #ff9041;
+
+    --ability-description: #dddddd;
+    --ability-job: #16ff3d;
+    --ability-level: #18dcff;
+
     font-family: Arial, sans-serif;
+}
+
+body.light-mode {
+    --background: #e8f3f8;
+    --surface: #f4f9fc;
+    --surface-light: #e2f0f7;
+    --surface-hover: #d4e9f3;
+
+    --border: #b8d3df;
+    --border-light: #a4c7d6;
+
+    --text: #283038;
+    --text-muted: #68747d;
+
+    --accent: #4aa8d8;
+    --accent-hover: #3698cc;
+    --accent-light: #65b9e3;
+
+    --ability-description: #3f4a52;
+    --ability-job: #287a45;
+    --ability-level: #283038;
+
+    --shadow: rgba(40, 80, 100, 0.15);
+}
+
+.theme-button {
+    display: block;
+    margin-left: auto;
+    margin-bottom: 1rem;
+
+    padding: 0.5rem 0.8rem;
+
+    background: var(--surface);
+    color: var(--text);
+
+    border: 1px solid var(--border);
+    border-radius: 4px;
+
+    font-size: 0.85rem;
+    cursor: pointer;
+
+    transition:
+        background-color 0.4s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.theme-button:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent-light);
+}
+
+.theme-button:focus-visible {
+    outline: none;
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 1px var(--accent-light);
 }
 
 * {
@@ -13,8 +86,12 @@
 body {
     margin: 0;
     min-width: 320px;
-    background-color: #121212;
-    color: #f0f0f0;
+    background-color: var(--background);
+    color: var(--text);
+
+    transition:
+        background-color 0.4s ease,
+        color 0.4s ease;
 }
 
 #root {
@@ -37,7 +114,7 @@ h1 {
     font-weight: 400;
     letter-spacing: 0.05em;
     text-align: center;
-    color: #f0f0f0;
+    color: var(--text);
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
 }
 
@@ -50,17 +127,21 @@ h1 {
     align-items: center;
     margin-bottom: 0.5rem;
     padding: 1rem;
-    background-color: #1e1e1e;
-    border: 1px solid #333;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
+
+    transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
 }
 
 .search-form select,
 .search-form input {
     padding: 0.6rem;
-    background-color: #2a2a2a;
-    color: #f0f0f0;
-    border: 1px solid #444;
+    background-color: var(--surface-light);
+    color: var(--text);
+    border: 1px solid var(--border);
     border-radius: 4px;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -70,14 +151,14 @@ h1 {
 }
 
 .search-form input::placeholder {
-    color: #f0f0f0;
+    color: var(--text);
     opacity: 0.8;
 }
 
 .search-form button {
     padding: 0.6rem 1rem;
-    background-color: #ff7b1a;
-    color: #121212;
+    background-color: var(--accent);
+    color: var(--background);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -85,12 +166,12 @@ h1 {
 }
 
 .search-form button:hover {
-    background-color: #ff913d;
+    background-color: var(--accent-hover);
 }
 
 .search-form select:hover,
 .search-form input:hover {
-    border-color: #ff9041;
+    border-color: var(--accent-light);
 }
 
 /* --------- Filters ---------- */
@@ -103,9 +184,13 @@ h1 {
     margin-top: 0.1rem;
     margin-bottom: 0.5rem;
 
-    background-color: #1e1e1e;
-    border: 1px solid #333;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
+
+    transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
 }
 
 .filters h2 {
@@ -113,7 +198,7 @@ h1 {
     font-size: 1.2rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #f0f0f0;
+    color: var(--text);
 }
 
 .filter-group {
@@ -123,18 +208,9 @@ h1 {
 }
 
 .filter-group label {
-    color: #f0f0f0;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-}
-
-.filters select {
-    padding: 0.6rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    background: var(--input-background);
     color: var(--text);
     font-size: 0.9rem;
+    text-transform: uppercase;
 }
 
 .level-inputs {
@@ -155,9 +231,9 @@ h1 {
 .filters select,
 .filters input {
     padding: 0.6rem;
-    background-color: #222;
-    color: #f0f0f0;
-    border: 1px solid #555;
+    background-color: var(--surface-light);
+    color: var(--text);
+    border: 1px solid var(--border-light);
     border-radius: 4px;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -165,37 +241,36 @@ h1 {
 .filters select:focus,
 .filters input:focus {
     outline: none;
-    border-color: #ff7b1a;
-    box-shadow: 0 0 0 1px rgba(255, 123, 26, 0.25);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
 }
 
 .filters select:hover,
 .filters input:hover {
-    border-color: #ff9041;
+    border-color: var(--accent);
 }
 
 .modeButton, .modeType {
     padding: 0.6rem 1rem;
-    border: 1px solid #555;
+    border: 1px solid var(--border-light);
     border-radius: 3px;
-    background: #222;
-    color: white;
+    background: var(--surface-light);
+    color: var(--text);
     cursor: pointer;
 }
 
 .modeButton:hover, .modeType:hover {
-    background: #333;
+    background: var(--surface-hover);
 }
 
 .modeButton:focus, .modeType:focus {
-    background: #333;
-    border-color: #ff9041;
+    background: var(--surface-hover);
+    border-color: var(--accent-light);
 }
 
 .modeButton.active, .modeType.active {
-    background: #333;
-    border-color: #ff9041;
-    box-shadow: 0 0 0 1px rgba(255, 123, 26, 0.25);
+    background: var(--surface-hover);
+    border-color: var(--accent-light);
 }
 
 /* ---------- Ability List ---------- */
@@ -212,18 +287,22 @@ h1 {
 .ability-card {
     background: linear-gradient(
         135deg,
-        #292929,
-        #181818
+        var(--surface-light),
+        var(--background)
     );
 
-    border: 1px solid #555;
+    border: 1px solid var(--border-light);
     border-radius: 4px;
 
     padding: 1rem;
 
     box-shadow:
-        inset 0 0 0 1px #111,
-        0 4px 12px rgba(0, 0, 0, 0.5);
+        inset 0 0 0 1px var(--background),
+        0 4px 12px var(--shadow);
+
+    transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
 }
 
 .ability-header {
@@ -248,7 +327,7 @@ h1 {
     margin: 0 0 0.35rem;
     font-size: 1.4rem;
     text-align: left;
-    color: #f0f0f0;
+    color: var(--text);
 }
 
 .ability-title h3 {
@@ -256,7 +335,7 @@ h1 {
     font-size: 1rem;
     font-weight: normal;
     text-align: left;
-    color: #16ff3d;
+    color: var(--ability-job);
 }
 
 .ability-header-text {
@@ -272,28 +351,28 @@ h1 {
     margin-bottom: 0;
     font-size: 1rem;
     text-align: left;
-    color: #18dcff;
+    color: var(--ability-level);
 }
 
 .ability-description {
     padding: 1rem 0;
     line-height: 1.5;
     text-align: left;
-    color: #ddd;
+    color: var(--ability-description);
 }
 
 .ability-level {
     margin: 0;
     padding-top: 0.75rem;
 
-    color: #3b1e09;
+    color: var(--text);
 
     font-size: 0.9rem;
     letter-spacing: 0.05em;
 }
 
 .ability-level span {
-    color: #fff;
+    color: var(--text);
 }
 
 .ability-properties {
@@ -302,8 +381,9 @@ h1 {
     gap: 0.5rem;
     margin: 0.75rem 0;
     padding: 0.65rem 0.75rem;
-    background: #1e1e1e;
-    border: 1px solid #454545;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 4px;
 }
 
@@ -315,14 +395,14 @@ h1 {
 }
 
 .ability-property dt {
-    color: #aaa;
+    color: var(--text-muted);
     font-size: 0.75rem;
     font-weight: 600;
 }
 
 .ability-property dd {
     margin: 0;
-    color: #f2f2f2;
+    color: var(--text);
     font-size: 0.95rem;
     font-weight: 500;
 }
@@ -343,4 +423,17 @@ h1 {
     .ability-list {
         grid-template-columns: 1fr;
     }
+}
+
+/* ---Special Light Mode Rules--- */
+body.light-mode .ability-description span[style*="rgba(255,255,102,1)"] {
+    color: #9a7600 !important;
+}
+
+body.light-mode .ability-description span[style*="rgba(0,204,34,1)"] {
+    color: #16823a !important;
+}
+
+body.light-mode .ability-description span[style*="rgba(255,123,26,1)"] {
+    color: #d65f00 !important;
 }

@@ -13,6 +13,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [classJobs, setClassJobs] = useState([]);
   const [classJobCategories, setClassJobCategories] = useState([]);
+  const [isLightMode, setIsLightMode] = useState(false);
 
   // States relating to data flow
   const [results, setResults] = useState([]);
@@ -39,6 +40,11 @@ function App() {
     }
     loadData();
   }, []);
+
+  function toggleTheme() {
+    setIsLightMode(!isLightMode);
+    document.body.classList.toggle("light-mode");
+  }
 
   async function handleSearch(searchTerm, selectedJobResponse)
   {
@@ -69,6 +75,13 @@ function App() {
   return (
     <div className="app">
       <h1>FFXIV Ability Searcher</h1>
+      <button 
+        className="theme-button"
+        onClick={toggleTheme}
+        aria-label={isLightMode ? "Switch to dark mode" : "Switch to light mode"}
+      >
+        {isLightMode ? "☾ Dark Mode" : "☀ Light Mode"}
+      </button>
       <SearchForm 
         onSearch={handleSearch}
         jobList={classJobs}
