@@ -5,7 +5,8 @@ function Filters(props)
         const newMode = event.target.value;
         props.onFilterChange({
             ...props.filters,
-            mode: newMode
+            mode: newMode,
+            type: newMode === "pvp" ? "Action" : props.filters.type
         });
     }
 
@@ -42,47 +43,69 @@ function Filters(props)
         <aside className="filters">
             <h2>Filters</h2>
             <div className="filter-group">
-                <label htmlFor="mode">Mode</label>
-                <select 
-                    id="mode"
-                    value={props.filters.mode} 
-                    onChange={onModeChange}
+                <label>Mode</label>
+                <button
+                    className={`modeButton ${props.filters.mode === "pve" ? "active" : ""}`}
+                    value="pve"
+                    onClick={onModeChange}
                 >
-                    <option value="pve">PvE</option>
-                    <option value="pvp">PvP</option>
-                    <option value="all">All</option>
-                </select>
-            </div>
-            <div className="filter-group">
-                <label htmlFor="type">Category</label>
-                <select 
-                    id="type"
-                    value={props.filters.type} 
-                    onChange={onCategoryChange}
+                    PvE
+                </button>
+                <button
+                    className={`modeButton ${props.filters.mode === "pvp" ? "active" : ""}`}
+                    value="pvp"
+                    onClick={onModeChange}
                 >
-                    <option value="Action">Actions</option>
-                    <option value="Trait">Traits</option>
-                </select>
+                    PvP
+                </button>
+                <button
+                    className={`modeButton ${props.filters.mode === "all" ? "active" : ""}`}
+                    value="all"
+                    onClick={onModeChange}
+                >
+                    All
+                </button>                                
             </div>
-            <div className="filter-group">
-                <label>Level Range</label>
-                <div className="level-inputs">
-                    <input 
-                        type="number" 
-                        value={props.filters.minLevel} 
-                        onChange={onMinLevelChange} 
-                        min="1"
-                        max="100"
-                    />
-                    <input 
-                        type="number" 
-                        value={props.filters.maxLevel} 
-                        onChange={onMaxLevelChange} 
-                        min="1"
-                        max="100"
-                    />
+            {props.filters.mode !== "pvp" && (
+            <>
+                <div className="filter-group">
+                    <label >Category</label>
+                    <button
+                        className={`modeType ${props.filters.type === "Action" ? "active" : ""}`}
+                        value="Action"
+                        onClick={onCategoryChange}
+                    >
+                        Actions
+                    </button>
+                    <button
+                        className={`modeType ${props.filters.type === "Trait" ? "active" : ""}`}
+                        value="Trait"
+                        onClick={onCategoryChange}
+                    >
+                        Traits
+                    </button>                    
                 </div>
-            </div>
+                <div className="filter-group">
+                    <label>Level Range</label>
+                    <div className="level-inputs">
+                        <input 
+                            type="number" 
+                            value={props.filters.minLevel} 
+                            onChange={onMinLevelChange} 
+                            min="1"
+                            max="100"
+                        />
+                        <input 
+                            type="number" 
+                            value={props.filters.maxLevel} 
+                            onChange={onMaxLevelChange} 
+                            min="1"
+                            max="100"
+                        />
+                    </div>
+                </div>
+            </>
+            )}
         </aside>
     );
 }

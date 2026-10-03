@@ -20,7 +20,7 @@ This rebuild is being used to learn React by recreating the application's existi
 * [x] Loading state
 * [x] Error handling
 * [x] Sorting
-* ~~[ ] Pagination~~ Consideration for later, but will not complete for now
+* [ ] ~~Pagination~~ Consideration for later, but will not complete for now
 * [x] Mobile responsiveness
 * [ ] Linked abilities
 * [ ] UI polish

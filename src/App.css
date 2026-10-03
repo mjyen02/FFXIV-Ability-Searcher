@@ -93,6 +93,111 @@ h1 {
     border-color: #ff9041;
 }
 
+/* --------- Filters ---------- */
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.75rem 1rem;
+    margin-top: 0.1rem;
+    margin-bottom: 0.5rem;
+
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+}
+
+.filters h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #f0f0f0;
+}
+
+.filter-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.filter-group label {
+    color: #f0f0f0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.filters select {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--input-background);
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.level-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+}
+
+.level-inputs input {
+    width: 4rem;
+    text-align: center;
+}
+
+.level-inputs span {
+    color: var(--text);
+}
+
+.filters select,
+.filters input {
+    padding: 0.6rem;
+    background-color: #222;
+    color: #f0f0f0;
+    border: 1px solid #555;
+    border-radius: 4px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.filters select:focus,
+.filters input:focus {
+    outline: none;
+    border-color: #ff7b1a;
+    box-shadow: 0 0 0 1px rgba(255, 123, 26, 0.25);
+}
+
+.filters select:hover,
+.filters input:hover {
+    border-color: #ff9041;
+}
+
+.modeButton, .modeType {
+    padding: 0.6rem 1rem;
+    border: 1px solid #555;
+    border-radius: 3px;
+    background: #222;
+    color: white;
+    cursor: pointer;
+}
+
+.modeButton:hover, .modeType:hover {
+    background: #333;
+}
+
+.modeButton:focus, .modeType:focus {
+    background: #333;
+    border-color: #ff9041;
+}
+
+.modeButton.active, .modeType.active {
+    background: #333;
+    border-color: #ff9041;
+    box-shadow: 0 0 0 1px rgba(255, 123, 26, 0.25);
+}
+
 /* ---------- Ability List ---------- */
 
 .ability-list {
@@ -126,7 +231,6 @@ h1 {
     align-items: center;
     gap: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #444;
 }
 
 .ability-icon {
@@ -192,85 +296,35 @@ h1 {
     color: #fff;
 }
 
-/* --------- Filters ---------- */
-
-.filters {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 0.75rem 1rem;
-    margin-top: 0.1rem;
-    margin-bottom: 0.5rem;
-
-    background-color: #1e1e1e;
-    border: 1px solid #333;
-    border-radius: 8px;
-}
-
-.filters h2 {
-    margin: 0;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #f0f0f0;
-}
-
-.filter-group {
-    display: flex;
+.ability-properties {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.5rem;
-    align-items: center;
-}
-
-.filter-group label {
-    color: #f0f0f0;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-}
-
-.filters select {
-    padding: 0.6rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    background: var(--input-background);
-    color: var(--text);
-    font-size: 0.9rem;
-}
-
-.level-inputs {
-    display: flex;
-    justify-content: center;
-    gap: 0.8rem;
-}
-
-.level-inputs input {
-    width: 4rem;
-    text-align: center;
-}
-
-.level-inputs span {
-    color: var(--text);
-}
-
-.filters select,
-.filters input {
-    padding: 0.6rem;
-    background-color: #2a2a2a;
-    color: #f0f0f0;
-    border: 1px solid #444;
+    margin: 0.75rem 0;
+    padding: 0.65rem 0.75rem;
+    background: #1e1e1e;
+    border: 1px solid #454545;
     border-radius: 4px;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.filters select:focus,
-.filters input:focus {
-    outline: none;
-    border-color: #ff7b1a;
-    box-shadow: 0 0 0 1px rgba(255, 123, 26, 0.25);
+.ability-property {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
 }
 
-.filters select:hover,
-.filters input:hover {
-    border-color: #ff9041;
+.ability-property dt {
+    color: #aaa;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.ability-property dd {
+    margin: 0;
+    color: #f2f2f2;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
 /* ---------- Mobile ---------- */
