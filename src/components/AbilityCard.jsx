@@ -1,7 +1,9 @@
+import AbilityDescription from "./AbilityDescription.jsx";
+
 const baseURL = 'https://v2.xivapi.com/api';
 
 const costTypes = {
-    3: {label: "MP", multiplier: 100},
+    3: {label: "MP"},
     22: {label: "Beast Gauge"},
     23: {label: "Polyglot"},
     25: {label: "Blood Gauge"},
@@ -25,12 +27,29 @@ const costTypes = {
     87: {label: "Rattling Coil (Gem)"},
     88: {label: "Serpent's Offering"},
     91: {label: "Pallete Gauge"},
-    92: {label: "Black Paint", multiplier: 0.25}
+    92: {label: "Paint"}
 };
 
+function getResourceCost(result) { // Function to normalize outlier cost values
+    const costValue = result.fields.PrimaryCostValue;
+
+    switch(result.fields.PrimaryCostType)
+    {
+        case 3:
+            return costValue * 100;
+        case 92:
+            return 1;
+        default:
+            return costValue;
+    }
+}
 function AbilityCard({ result }) {
 
     const costType = costTypes[result.fields.PrimaryCostType];
+    const context = {
+        mode: result.fields.IsPvP ? "pvp" : "pve",
+        classJobCategory: result.fields.ClassJobCategory.value
+    };
 
     const properties = [
         {
@@ -47,14 +66,14 @@ function AbilityCard({ result }) {
         ...(costTypes[result.fields.PrimaryCostType] && result.fields.PrimaryCostValue != null
             ? [{
                 label: "Cost",
-                value: `${result.fields.PrimaryCostValue * (costType.multiplier ? costType.multiplier : 1)} ${costType.label}`
+                value: `${getResourceCost(result)} ${costType.label}`
             }]
             : []
         )
     ];
 
 	return (
-		<article className="ability-card">
+		<article className="ability-card" id={`ability-${result.row_id}`}>
 			<header className="ability-header">
 				<img
 					className="ability-icon"
@@ -77,12 +96,9 @@ function AbilityCard({ result }) {
                     </div>
                 ))}
             </dl>
-			<div
-				className="ability-description"
-				dangerouslySetInnerHTML={{
-					__html: result.transient['Description@as(html)']
-				}}
-			/>
+			<AbilityDescription description={result.transient["Description@as(html)"]}
+                context={context}
+            />
 			<p className="ability-level">
 				Level:
 				<span>

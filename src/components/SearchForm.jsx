@@ -30,7 +30,7 @@ function SearchForm(props) {
 						<option key={job.row_id} value={job.fields.Abbreviation}>
 							{job.fields.NameEnglish} ({job.fields.Abbreviation})
 							{job.fields.Abbreviation !==
-								job.fields.ClassJobParent.fields.Abbreviation &&
+								job.fields.ClassJobParent.fields.Abbreviation && job.fields.Abbreviation !== "SCH" &&
 								` / ${job.fields.ClassJobParent.fields.NameEnglish} (${job.fields.ClassJobParent.fields.Abbreviation})`}
 						</option>
 					))}

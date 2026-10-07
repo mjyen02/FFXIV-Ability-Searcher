@@ -407,6 +407,50 @@ h1 {
     font-weight: 500;
 }
 
+.ability-reference {
+    cursor: pointer;
+}
+
+.ability-reference-wrapper {
+    position: relative;
+}
+
+.ability-tooltip {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+
+    min-width: 400px;
+    padding: 0.75rem;
+    box-sizing: border-box;
+    
+    background: linear-gradient(
+        135deg,
+        var(--surface-light),
+        var(--background)
+    );
+
+    border: 1px solid var(--border-light);
+    z-index: 10;
+}
+
+.ability-tooltip .ability-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ability-tooltip .ability-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.ability-tooltip .ability-title h2 {
+    font-size: 1rem;
+    margin: 0;
+}
+
 /* ---------- Mobile ---------- */
 
 @media (max-width: 768px) {
