@@ -1,4 +1,6 @@
+import { useEffect, useState} from "react";
 import AbilityDescription from "./AbilityDescription.jsx";
+import "../styles/abilityCard.css"
 
 const baseURL = 'https://v2.xivapi.com/api';
 
@@ -43,12 +45,29 @@ function getResourceCost(result) { // Function to normalize outlier cost values
             return costValue;
     }
 }
-function AbilityCard({ result }) {
+function AbilityCard({ result, checkIfAbilityExists, isAbilityInResults, isHighlighted, highlightKey }) {
+
+    const [glowActive, setGlowActive] = useState(false);
+
+    useEffect(() => {
+        setGlowActive(false);
+        
+        if (!isHighlighted) return;
+
+        setGlowActive(false);
+
+        const frame = requestAnimationFrame(() => {
+            setGlowActive(true);
+        });
+
+        return () => cancelAnimationFrame(frame);
+    }, [isHighlighted, highlightKey]);
 
     const costType = costTypes[result.fields.PrimaryCostType];
     const context = {
         mode: result.fields.IsPvP ? "pvp" : "pve",
-        classJobCategory: result.fields.ClassJobCategory.value
+        classJobCategory: result.fields.ClassJobCategory.value,
+        classJobAbbrev: result.fields.ClassJob.Abbreviation
     };
 
     const properties = [
@@ -73,7 +92,11 @@ function AbilityCard({ result }) {
     ];
 
 	return (
-		<article className="ability-card" id={`ability-${result.row_id}`}>
+		<article 
+            className={`ability-card ${glowActive 
+            ? "ability-highlight" : ""}`} 
+            id={`ability-${result.row_id}`}
+        >
 			<header className="ability-header">
 				<img
 					className="ability-icon"
@@ -96,8 +119,11 @@ function AbilityCard({ result }) {
                     </div>
                 ))}
             </dl>
-			<AbilityDescription description={result.transient["Description@as(html)"]}
+			<AbilityDescription 
+                description={result.transient["Description@as(html)"]}
                 context={context}
+                checkIfAbilityExists={checkIfAbilityExists}
+                isAbilityInResults={isAbilityInResults}
             />
 			<p className="ability-level">
 				Level:

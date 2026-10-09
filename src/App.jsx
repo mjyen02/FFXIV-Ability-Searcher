@@ -9,7 +9,7 @@ import './App.css'
 
 function App() {
 
-  // States relating to initlization
+  // States relating to initialization
   const [isLoading, setIsLoading] = useState(true);
   const [classJobs, setClassJobs] = useState([]);
   const [classJobCategories, setClassJobCategories] = useState([]);
@@ -19,6 +19,8 @@ function App() {
   const [results, setResults] = useState([]);
   const [selectedJob, setSelectedJob] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [pendingScrollId, setPendingScrollId] = useState(null);
+  const [sameScrollCounter, setSameScrollCounter] = useState(0);
   const [filters, setFilters] = useState({
     mode: "pve",
     type: "Action",
@@ -41,9 +43,48 @@ function App() {
     loadData();
   }, []);
 
+  useEffect(() => {
+    if (pendingScrollId === null)
+    {
+      return;
+    }
+
+    const scrolledAbility = document.getElementById(`ability-${pendingScrollId}`);
+    if (scrolledAbility)
+    {
+      scrolledAbility.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    }
+
+  }, [results, pendingScrollId, sameScrollCounter])
+
   function toggleTheme() {
     setIsLightMode(!isLightMode);
     document.body.classList.toggle("light-mode");
+  }
+
+  function checkIfAbilityExists(ability) 
+  {
+    setPendingScrollId(ability.row_id);
+    setSameScrollCounter((prevCounter) => prevCounter + 1);
+
+      setResults((prevResults) => {
+        if (!prevResults.some((results) => results.row_id === ability.row_id)) 
+        { 
+          const newList = [...prevResults, ability];
+          return sortAbilities(newList, classJobs)
+        }
+
+        return prevResults;
+      });
+  }
+
+  function isAbilityInResults(ability)
+  {
+    const isInResults = results.some(
+      result => result.row_id === ability.row_id
+    );
+
+    return isInResults;
   }
 
   async function handleSearch(searchTerm, selectedJobResponse)
@@ -63,6 +104,7 @@ function App() {
     } catch (error) {
       return <h2>Sorry, an error during the search has occurred.</h2>
     } finally {
+      console.log("Post-search results: ", results);
       setIsSearching(false);
     }
   }
@@ -89,7 +131,16 @@ function App() {
         onFilterChange={setFilters}
       />
       {isSearching && <p>Searching...</p>}
-      <AbilityList results={results} classJobCategories={classJobCategories} classJobs={classJobs} selectedJob={selectedJob}/>
+      <AbilityList 
+        results={results} 
+        classJobCategories={classJobCategories} 
+        classJobs={classJobs} 
+        selectedJob={selectedJob}
+        checkIfAbilityExists={checkIfAbilityExists}
+        isAbilityInResults={isAbilityInResults}
+        pendingScrollId={pendingScrollId}
+        sameScrollCounter={sameScrollCounter}
+      />
     </div>
   );
 }

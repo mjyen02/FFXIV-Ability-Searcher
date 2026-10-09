@@ -22,8 +22,9 @@ This rebuild is being used to learn React by recreating the application's existi
 * [x] Sorting
 * [ ] ~~Pagination~~ Consideration for later, but will not complete for now
 * [x] Mobile responsiveness
-* [ ] Linked abilities
-* [ ] UI polish
+* [x] Linked abilities
+* [x] UI polish
+* [x] Additional Search Caching
 
 ## Project Goals
 

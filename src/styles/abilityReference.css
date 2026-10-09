@@ -1,0 +1,124 @@
+.ability-reference {
+    cursor: inherit;
+}
+
+.ability-reference.is-link {
+    cursor: pointer;
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--accent-medium);
+}
+
+.ability-reference.is-link:hover {
+    text-decoration-style: solid;
+    text-decoration-color: var(--accent);
+}
+
+.ability-reference-wrapper {
+    position: relative;
+}
+
+.ability-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 650px;
+    min-width: 0;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    /* overflow-y: auto; */
+
+    padding: 0.75rem;
+    box-sizing: border-box;
+    
+    background: linear-gradient(
+        135deg,
+        var(--surface-light),
+        var(--background)
+    );
+
+    border: 1px solid var(--border-light);
+    z-index: 10;
+}
+
+/* Horizontal Positioning of Hovered Tooltips */
+.ability-tooltip.left {
+    left: 0;
+    transform: none;
+}
+
+.ability-tooltip.right {
+    left: auto;
+    right: 0;
+    transform: none;
+}
+
+/* Vertical Positioning of Hovered Tooltips */
+.ability-tooltip.above {
+    top: auto;
+    bottom: 100%;
+}
+
+.ability-tooltip .ability-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ability-tooltip .ability-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.ability-tooltip .ability-title h2 {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.scroll-button {
+    display: block;
+    /* width: 100%; */
+    margin-top: 0.75rem;
+    padding: 0.55rem 0.8rem;
+
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease;
+}
+
+.scroll-button-existing {
+    background: var(--surface-light);
+    color: var(--text);
+}
+
+.scroll-button-existing:hover {
+    background: var(--border-light);
+    border-color: var(--accent-light);
+}
+
+.scroll-button-add {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-color: var(--accent-medium);
+}
+
+.scroll-button-add:hover {
+    background: var(--accent-medium);
+    border-color: var(--accent);
+}
+
+.scroll-button:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+}

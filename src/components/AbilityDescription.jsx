@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { referenceResolver } from "../utils/referenceResolver";
 import AbilityReference from "./AbilityReference";
 
-function AbilityDescription({ description, context }) {
+function AbilityDescription({ description, context, checkIfAbilityExists, isAbilityInResults }) {
     const [resolvedAbilities, setResolvedAbilities] = useState([]);
 
     const parser = new DOMParser();
@@ -25,7 +25,7 @@ function AbilityDescription({ description, context }) {
                 resultList.push(result);
             }
             setResolvedAbilities(resultList);
-            console.log("Returned Results: ", resultList);
+            // console.log("Returned Results: ", resultList);
         }
 
         resolveReferences();
@@ -44,7 +44,7 @@ function AbilityDescription({ description, context }) {
 
                 if (node.nodeName === "SPAN") {
                     const resolvedAbility = resolvedAbilities[referenceIndex];
-
+                    console.log(document.body.innerHTML);
                     referenceIndex++;
                     const color = node.style.color;
                     if (resolvedAbility) {
@@ -54,6 +54,8 @@ function AbilityDescription({ description, context }) {
                                 ability={resolvedAbility}
                                 context={context}
                                 color={color}
+                                checkIfAbilityExists={checkIfAbilityExists}
+                                isAbilityInResults={isAbilityInResults}
                             />
                         );
                     }
